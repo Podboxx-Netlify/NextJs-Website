@@ -40,6 +40,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const Post: React.FC<{ data: Data }> = ({data}) => {
     const router = useRouter()
     const playerId = router.query.id == 'preview' ? '38010' : router.query.id
+    console.log(process.env.NEXT_PUBLIC_STATION_ID)
     useEffect(() => {
         // If in preview mode send message when page is loaded
         if (router.query.id == 'preview') {
