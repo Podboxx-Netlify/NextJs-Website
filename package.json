@@ -1,0 +1,39 @@
+{
+  "name": "nextjs-template",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 5000",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build && next export",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@netlify/plugin-nextjs": "^3.5.0",
+    "@tailwindcss/line-clamp": "^0.2.1",
+    "@tailwindcss/typography": "^0.4.1",
+    "daisyui": "^1.6.0",
+    "j-toker": "git://github.com/groupefungo/fungo-j-toker",
+    "moment": "^2.29.1",
+    "next": "11.0.0",
+    "next-seo": "^4.25.1",
+    "nookies": "^2.5.2",
+    "nprogress": "^0.2.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-paginate": "^7.1.3",
+    "sass": "^1.35.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.5",
+    "@types/node": "^15.12.2",
+    "@types/react": "^17.0.11",
+    "autoprefixer": "^10.2.6",
+    "eslint": "7.28.0",
+    "eslint-config-next": "11.0.0",
+    "postcss": "^8.3.5",
+    "tailwindcss": "^2.2.0",
+    "typescript": "^4.3.2"
+  }
+}

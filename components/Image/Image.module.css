@@ -1,0 +1,15 @@
+.imageContainer {
+    width: 200px;
+}
+
+.imageContainer > div {
+    position: unset !important;
+}
+
+.image {
+    object-fit: contain;
+    width: 100% !important;
+    position: relative !important;
+    height: unset !important;
+    /*border-radius: 0.75rem;*/
+}
