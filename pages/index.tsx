@@ -13,7 +13,7 @@ interface Data {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     // const res = await fetch(`http://localhost:4000/api/${process.env.station_id}/blog?page=${context.query.page}`)
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${process.env.station_id}/blog?channel=${context.query.channel_id || null}&page=${context.query.page || 1}`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/blog?channel=${context.query.channel_id || null}&page=${context.query.page || 1}`)
     if (res.status !== 200) {
         const data = {}
         return {

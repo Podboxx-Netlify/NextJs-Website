@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
             },
         }
     }
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${process.env.station_id}/podcast/${context.query.id}`)
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/podcast/${context.query.id}`)
     // const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/podcast/${context.query.id}`)
     if (res.status !== 200) {
         const data = {}
