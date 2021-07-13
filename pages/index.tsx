@@ -45,7 +45,7 @@ const Blog: React.FC<{ data: Data }> = ({data}) => {
     const handlePageClick = (data) => {
         router.push(`/?page=${data.selected + 1}`)
     }
-
+console.log(process.env.NEXT_PUBLIC_STATION_ID)
     return (
         <>
             {data.podcasts && Object.keys(data.podcasts).length > 0 ?
