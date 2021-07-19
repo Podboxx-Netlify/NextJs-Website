@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import Image from 'next/image'
+import Link from 'next/link'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {
     faFacebookF,
@@ -24,17 +24,9 @@ export default function Header({...props}) {
         <>
             <header className="sticky z-10 top-0">
                 <div className="navbar shadow-lg bg-16dp text-neutral-content h-24 ">
-                    <div className="px-2 mx-2 ml-20 navbar-start">
-                        <Image
-                            alt="Header"
-                            src="/logo_podboxx.svg"
-                            className="cursor-pointer"
-                            width={200}
-                            height={100}
-                            quality={100}
-                            unoptimized={true}
-                            onClick={() => router.replace('/')}
-                        />
+                    <div className="px-2 mx-2 navbar-start">
+                    <span className="text-lg font-bold select-none"><Link
+                        href='/'>{props.data?.title || 'Loading...'}</Link></span>
                     </div>
                     <div className="navbar-center hidden px-2 mx-2 lg:flex">
                         <div className="flex items-stretch">
@@ -224,16 +216,6 @@ export default function Header({...props}) {
                 </div>
             </header>
 
-            {heroImage &&
-            <div className="hero h-72" style={{
-                backgroundImage: `url('./header_blog.png')`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'top',
-                backgroundRepeat: 'no-repeat',
-            }}>
-                <div className="hero-overlay bg-opacity-60"/>
-            </div>
-            }
         </>
     );
 }
