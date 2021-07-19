@@ -1,12 +1,18 @@
 import {GetServerSideProps} from 'next'
 import React from "react";
 import {useRouter} from "next/router";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCalendarAlt, faClock} from "@fortawesome/free-regular-svg-icons";
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 
 interface Data {
     title: string
     blog_content?: string
     description?: string
     image_url?: string
+    publication_date?: string
+    duration?: number
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -38,8 +44,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 const Post: React.FC<{ data: Data }> = ({data}) => {
     const router = useRouter()
-    const playerId = router.query.id == 'preview' ? '38010' : router.query.id
-
+    dayjs.extend(utc)
     return (
         <>
             <div
@@ -51,8 +56,16 @@ const Post: React.FC<{ data: Data }> = ({data}) => {
                         router.back()
                     }}>Go Back
                 </button>
+
                 <article className="prose prose-sm lg:prose-lg mx-auto max-w-screen-lg px-5">
-                    <h1 className='text-center capitalize'>{data.title || 'Error loading the episode'}</h1>
+                    <h1 className='text-center capitalize col-span-2'>{data.title || 'Error loading the episode'}</h1>
+                    <h4 className="text-sm text-center" style={{marginTop: '-20px'}}>
+                        <FontAwesomeIcon className="mr-1"
+                                         icon={faCalendarAlt}/> {dayjs(data.publication_date).utc().format('MMMM D YYYY')}
+                        {data.duration && <>
+                            <FontAwesomeIcon icon={faClock} className="ml-4 mr-1"/> {data.duration}
+                        </>}
+                    </h4>
                     {data.blog_content !== null &&
                     <div className="max-w-none"
                          dangerouslySetInnerHTML={{__html: data.blog_content}}/>
@@ -60,9 +73,10 @@ const Post: React.FC<{ data: Data }> = ({data}) => {
                 </article>
                 <br/>
                 {data.title && router.query.id &&
-                <div className="min-h-96 h-72 mb-10">
+                <div className="min-h-96 h-72 my-20">
                     <iframe className='h-80 w-full mb-5'
-                            src={`https://player.podboxx.com/${router.query.id}?blog=true`}
+                        // src={`https://player.podboxx.com/${router.query.id}?blog=true`}
+                            src={`https://player.podboxx.com/39329?blog=true`}
                             allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen/>
                 </div>
