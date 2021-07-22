@@ -6,7 +6,7 @@ import {Props, UserContext} from "../../components/userContext/user-context";
 const Login: React.FC = () => {
     const router = useRouter()
 
-    const {userState, userDispatch} = useContext<Props>(UserContext)
+    const {userDispatch} = useContext<Props>(UserContext)
     const [formData, setFormData] = useState({
         email: '',
         password: '',

@@ -1,6 +1,8 @@
 import React, {useEffect, useReducer} from 'react';
 import UserReducer from "./user-reducer";
 import JtockAuth from "j-tockauth";
+import Axios from "axios";
+import {DeviseHeader} from "j-tockauth/src/@types/options";
 
 export interface Props {
     userState?: { isLoading: boolean; isLogged: boolean; user: {}; error: boolean; }
@@ -20,6 +22,32 @@ const initialState = {
 
 const UserProvider = ({children}) => {
     const [userState, userDispatch] = useReducer(UserReducer, initialState)
+    const isLogged = () => {
+        let headers;
+        if (typeof window !== 'undefined') {
+            const auth = new JtockAuth({
+                host: "http://127.0.0.1:4000",
+                prefixUrl: `/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers`,
+                debug: true
+            });
+            headers = auth.tokenHeaders()
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await Axios.get(`http://127.0.0.1:4000/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers/profile`, {
+                        params: {
+                            uid: headers.uid,
+                            client: headers.client,
+                            "access-token": headers["access-token"]
+                        }
+                    });
+                    console.log(response.headers);
+                    resolve(response.data);
+                } catch (err) {
+                    reject(err);
+                }
+            });
+        }
+    }
     const isAuth = () => {
         if (typeof window !== 'undefined') {
             const auth = new JtockAuth({
@@ -37,6 +65,7 @@ const UserProvider = ({children}) => {
     }
     useEffect(() => {
         isAuth()
+        // isLogged().then(r => console.log(r))
     }, [])
     return (
         // @ts-ignore

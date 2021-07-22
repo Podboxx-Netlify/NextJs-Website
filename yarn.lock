@@ -1475,7 +1475,7 @@ braintree-web-drop-in-react@^1.2.1:
     braintree-web-drop-in "^1.24.0"
     prop-types "^15.7.2"
 
-braintree-web-drop-in@^1.24.0, braintree-web-drop-in@^1.31.0:
+braintree-web-drop-in@^1.24.0:
   version "1.31.0"
   resolved "https://registry.yarnpkg.com/braintree-web-drop-in/-/braintree-web-drop-in-1.31.0.tgz#d9ad5a70fa4de1e4eabc84612a84058f06389005"
   integrity sha512-SOsDgd5MfTLY+/UQ/HkA+WZ9Su3VnJvf1QOBYx4YeDGpb0Z6T6IcMx5iHSiP6KdGB2SHF0eCDzOT4shF2Xsecg==
@@ -1489,7 +1489,7 @@ braintree-web-drop-in@^1.24.0, braintree-web-drop-in@^1.31.0:
     braintree-web "3.79.1"
     promise-polyfill "8.2.0"
 
-braintree-web@3.79.1:
+braintree-web@3.79.1, braintree-web@^3.79.1:
   version "3.79.1"
   resolved "https://registry.yarnpkg.com/braintree-web/-/braintree-web-3.79.1.tgz#300c73b579dbc5879162f0cefef8dc7320cba83e"
   integrity sha512-OC4flc8pfsyZCJdDFBLVvmL2dkix5za34ji+4+zYph50++PVMKatJGSDtccd1qGvHoipi1ca2yNdHatedCRsZA==

@@ -17,7 +17,7 @@
     "@netlify/plugin-nextjs": "^3.5.0",
     "@tailwindcss/line-clamp": "^0.2.1",
     "@tailwindcss/typography": "^0.4.1",
-    "braintree-web-drop-in": "^1.31.0",
+    "braintree-web": "^3.79.1",
     "braintree-web-drop-in-react": "^1.2.1",
     "daisyui": "^1.6.0",
     "dayjs": "^1.10.6",

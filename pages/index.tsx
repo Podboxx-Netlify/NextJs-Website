@@ -53,7 +53,6 @@ const Blog: React.FC<{ data: Data }> = ({data}) => {
     const router = useRouter()
     const [tagFilter, setTagFilter] = useState<string[]>([])
     const {userState} = useContext<Props>(UserContext)
-    console.log(userState)
     useEffect(() => {
         router.query.tags === undefined && setTagFilter([])
     }, [router.query.tags])
@@ -61,9 +60,9 @@ const Blog: React.FC<{ data: Data }> = ({data}) => {
     useEffect(() => {
         if (tagFilter.length > 0) {
             let tags = encodeURIComponent(tagFilter.join(","))
-            router.push(`/?tags=${tags}`)
+            router.push(`/?tags=${tags}`).then()
         } else {
-            router.push('/')
+            router.push('/').then()
         }
     }, [tagFilter])
 
