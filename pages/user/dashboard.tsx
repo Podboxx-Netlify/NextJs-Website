@@ -2,6 +2,8 @@ import React, {useContext, useEffect, useState} from "react";
 import {client, hostedFields} from "braintree-web"
 import Axios from "axios";
 import {Props, UserContext} from "../../components/userContext/user-context";
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
 
 const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false)
@@ -9,13 +11,17 @@ const Dashboard: React.FC = () => {
     const [payment_methods, setPaymentMethods] = useState([])
     const [error, setError] = useState<string[]>()
     const [alert, setAlert] = useState(false);
-
+    const [channelPlans, setChannelPlans] = useState([])
+    dayjs.extend(utc)
     useEffect(() => {
         getToken().then(token => instance(token))
     }, [])
 
     useEffect(() => {
+        listChannelPlans().then(r => console.log(r))
+    },[])
 
+    useEffect(() => {
         if (alert === false) {
             return
         } else {
@@ -28,8 +34,8 @@ const Dashboard: React.FC = () => {
 
     const getToken = async () => {
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
-        const response = await Axios.get(`http://127.0.0.1:4000/${process.env.NEXT_PUBLIC_STATION_ID}/payment_methods/client_token`)
-        const payment_res = await Axios.get(`http://127.0.0.1:4000/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers/${userState.user['id']}/payment_methods`,
+        const response = await Axios.get(`https://3b8c4cc9dda0.ngrok.io/payment_methods/client_token`)
+        const payment_res = await Axios.get(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods`,
             {
                 params: {
                     uid: headers['uid'],
@@ -37,6 +43,7 @@ const Dashboard: React.FC = () => {
                     "access-token": headers["access-token"]
                 }
             })
+        console.log(payment_res.data.length > 0, payment_res.data)
         setPaymentMethods(payment_res.data)
         return response.data.client_token
     }
@@ -111,28 +118,66 @@ const Dashboard: React.FC = () => {
     const handleSubmit = async (nonce: string) => {
         setLoading(true)
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
-
-        if (payment_methods.length > 0) {
-            await Axios.put(`http://127.0.0.1:4000/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers/${userState.user['id']}/subscription/${payment_methods[0]['token']}/edit_payment_method`,
+        console.log(payment_methods, payment_methods.length > 0)
+        const payment_res = await Axios.get(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods`,
+            {
+                params: {
+                    uid: headers['uid'],
+                    client: headers['client'],
+                    "access-token": headers["access-token"]
+                }
+            })
+        if (payment_res.data.length > 0) {
+            await Axios.put(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods/plotte`,
                 {
                     nonce_from_the_client: nonce,
                     uid: headers['uid'],
                     client: headers['client'],
                     "access-token": headers["access-token"]
-                })
+                }).then(r => console.log(r))
             setLoading(false)
         } else {
-            await Axios.post(`http://127.0.0.1:4000/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers/3/payment_methods`,
+            await Axios.post(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods`,
                 {
                     nonce_from_the_client: nonce,
                     uid: headers['uid'],
                     client: headers['client'],
                     "access-token": headers["access-token"]
-                })
+                }).then(r => console.log(r))
             setLoading(false)
         }
         setAlert(true)
     }
+
+    const listChannelPlans = async () => {
+        await Axios.get(`https://3b8c4cc9dda0.ngrok.io/1/subscription_plans/list`).then(r => console.log(r))
+    }
+
+    const handleCreatePlan = async () => {
+        const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
+        const payment_res = await Axios.get(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods`,
+            {
+                params: {
+                    uid: headers['uid'],
+                    client: headers['client'],
+                    "access-token": headers["access-token"]
+                }
+            })
+        console.log(payment_res.data)
+        let start_date
+        console.log(Date.now().toString())
+        await Axios.post(`https://3b8c4cc9dda0.ngrok.io/1/payment/create_subscription`,
+            {
+                subscriber_id: userState.user['id'],
+                payment_token: payment_res.data[0].token,
+                selected_plan: 19,
+                // start_date: dayjs(),
+                uid: headers['uid'],
+                client: headers['client'],
+                "access-token": headers["access-token"]
+            }).then(r => console.log(r))
+    }
+    console.log(Date.now().toString())
     return (
         <div className="w-full grid place-items-center mt-10">
             <div className="p-2 card bg-08dp shadow-md">
@@ -158,7 +203,8 @@ const Dashboard: React.FC = () => {
                                         {alert &&
                                         <div className="alert alert-success fixed my-auto">
                                             <div className="flex-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#2196f3"
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                     stroke="#2196f3"
                                                      className="w-6 h-6 mx-2">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                                                           d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -172,7 +218,18 @@ const Dashboard: React.FC = () => {
                                             {payment_methods.length > 0 ? 'Update' : 'Create'}
                                         </button>
                                     </div>
-                                </form>
+                                </form>handleTestPlan
+                            </div>
+                        </div>
+                        <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content ml-5">
+                            <div className="card-body">
+                                <p className="text-xl">Plans</p>
+                                <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                        onClick={listChannelPlans}>List Plans
+                                </button>
+                                <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                        onClick={handleCreatePlan}>Create Plan
+                                </button>
                             </div>
                         </div>
                     </div>

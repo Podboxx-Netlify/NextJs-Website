@@ -26,14 +26,14 @@ const UserProvider = ({children}) => {
         let headers;
         if (typeof window !== 'undefined') {
             const auth = new JtockAuth({
-                host: "http://127.0.0.1:4000",
+                host: "https://3b8c4cc9dda0.ngrok.io",
                 prefixUrl: `/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers`,
                 debug: true
             });
             headers = auth.tokenHeaders()
             return new Promise(async (resolve, reject) => {
                 try {
-                    const response = await Axios.get(`http://127.0.0.1:4000/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers/profile`, {
+                    const response = await Axios.get(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/profile`, {
                         params: {
                             uid: headers.uid,
                             client: headers.client,
@@ -51,8 +51,8 @@ const UserProvider = ({children}) => {
     const isAuth = () => {
         if (typeof window !== 'undefined') {
             const auth = new JtockAuth({
-                host: "http://127.0.0.1:4000",
-                prefixUrl: `/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers`,
+                host: "https://3b8c4cc9dda0.ngrok.io",
+                prefixUrl: `/api/1/subscribers`,
                 debug: true
             });
             localStorage.getItem('J-tockAuth-Storage') !== null &&

@@ -28,8 +28,8 @@ export default function Header({...props}) {
 
     const signOut = () => {
         const auth = new JtockAuth({
-            host: "http://127.0.0.1:4000",
-            prefixUrl: `/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers`,
+            host: "https://3b8c4cc9dda0.ngrok.io",
+            prefixUrl: `/api/1/subscribers`,
             debug: true
         });
         auth
