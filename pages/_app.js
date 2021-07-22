@@ -3,6 +3,7 @@ import NProgress from 'nprogress'
 import Router from 'next/router'
 import Layout from "../components/layout/layout";
 import React from "react";
+import UserProvider from "../components/userContext/user-context";
 
 Router.events.on('routeChangeStart', () => NProgress.start())
 Router.events.on('routeChangeComplete', () => NProgress.done())
@@ -10,10 +11,12 @@ Router.events.on('routeChangeError', () => NProgress.done())
 
 function MyApp({Component, pageProps, websiteData}) {
     return (
-        <Layout website={websiteData}>
-            <title>{websiteData && websiteData.title || 'Error'}</title>
-            <Component {...pageProps} website={websiteData}/>
-        </Layout>
+        <UserProvider>
+            <Layout website={websiteData}>
+                <title>{websiteData && websiteData.title || 'Error'}</title>
+                <Component {...pageProps} website={websiteData}/>
+            </Layout>
+        </UserProvider>
     )
 }
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useReducer, useState} from "react";
 import Link from 'next/link'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {
@@ -11,14 +11,34 @@ import {
     faYoutube
 } from '@fortawesome/free-brands-svg-icons'
 import {useRouter} from "next/router";
+import JtockAuth from "j-tockauth";
+import {UserContext, Props} from "../userContext/user-context";
 
 export default function Header({...props}) {
-    const [heroImage, setHeroImage] = useState(false)
     const router = useRouter()
+    const {userState} = useContext<Props>(UserContext)
+    const [isLogged, setIsLogged] = useState<boolean>(false)
 
-    useEffect(() => {
-        router.pathname === "/" && setHeroImage(true)
-    }, [])
+    useEffect(()=>{
+        userState.isLogged && setIsLogged(true)
+    },[userState.isLogged])
+
+    // const today = new Date();
+    // const message = `Good ${(today.getHours() < 12 && 'Morning') || (today.getHours() < 17 && 'Afternoon') || 'Evening'} `; //then get current hours and we have a message :)
+
+    const signOut = () => {
+        const auth = new JtockAuth({
+            host: "http://127.0.0.1:4000",
+            prefixUrl: `/api/${process.env.NEXT_PUBLIC_STATION_ID}/subscribers`,
+            debug: true
+        });
+        auth
+            .signOut()
+            .then(() => router.reload())
+            .catch(error => {
+                console.log(error);
+            });
+    }
 
     return (
         <>
@@ -30,9 +50,57 @@ export default function Header({...props}) {
                     </div>
                     <div className="navbar-center hidden px-2 mx-2 lg:flex">
                         <div className="flex items-stretch">
+                            {/*{props.userData?.success === true &&*/}
+                            {/*<span className='text-lg select-none'>{message} {props.userData?.data?.first_name}</span>*/}
+                            {/*}*/}
                             <a className="btn btn-ghost btn-sm rounded-btn" onClick={() => router.replace('/')}>
                                 Home
                             </a>
+                            {isLogged !== true ?
+                                <>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                             width="24px"
+                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
+                                             strokeWidth="2">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        <Link href="/user/login">Sign In</Link>
+                                    </button>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                             width="24px"
+                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
+                                             strokeWidth="2">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        <Link href="/user/register">Register</Link>
+                                    </button>
+                                </> : <>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                             width="24px"
+                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
+                                             strokeWidth="2">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        <Link href="/user/dashboard">My Account</Link>
+                                    </button>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => signOut()}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                             width="24px"
+                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
+                                             strokeWidth="2">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        Sign Out
+                                    </button>
+                                </>}
                         </div>
                     </div>
                     <div className="navbar-end">

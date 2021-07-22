@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useState} from 'react'
 import {GetServerSideProps} from 'next'
 import PostCard from "../components/post-card";
 import ReactPaginate from 'react-paginate';
 import {useRouter} from "next/router";
+import {Props, UserContext} from "../components/userContext/user-context";
 
 interface Data {
     website?: [title: string]
@@ -51,7 +52,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 const Blog: React.FC<{ data: Data }> = ({data}) => {
     const router = useRouter()
     const [tagFilter, setTagFilter] = useState<string[]>([])
-
+    const {userState} = useContext<Props>(UserContext)
+    console.log(userState)
     useEffect(() => {
         router.query.tags === undefined && setTagFilter([])
     }, [router.query.tags])
