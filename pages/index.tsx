@@ -27,9 +27,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     let uri
     let baseUri = `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}`
     if (context.query.tags !== undefined) {
-        uri = `${baseUri}/tags_blog?tags=${context.query.tags}&channel=false`
+        uri = `${baseUri}/tags_blog?tags=${context.query.tags}&channel=${context.query.channel_id || null}`
     } else {
-        uri = `${baseUri}/blog?channel=${context.query.channel_id || false}&page=${context.query.page || 1}`
+        uri = `${baseUri}/blog?channel=${context.query.channel_id || null}&page=${context.query.page || 1}`
     }
     const res = await fetch(uri)
     if (res.status !== 200) {
@@ -53,6 +53,14 @@ const Blog: React.FC<{ data: Data }> = ({data}) => {
     const router = useRouter()
     const [tagFilter, setTagFilter] = useState<string[]>([])
     const {userState} = useContext<Props>(UserContext)
+    console.log(userState)
+    useEffect(() => {
+        localStorage.channel && localStorage.channel !== router.query.channel && router.replace({
+            pathname: '/',
+            query: {channel_id: localStorage.channel},
+        }, '/')
+    },[router.query.channel])
+
     useEffect(() => {
         router.query.tags === undefined && setTagFilter([])
     }, [router.query.tags])

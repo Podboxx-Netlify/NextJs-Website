@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useReducer, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Link from 'next/link'
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {
@@ -11,35 +11,47 @@ import {
     faYoutube
 } from '@fortawesome/free-brands-svg-icons'
 import {useRouter} from "next/router";
-import JtockAuth from "j-tockauth";
-import {UserContext, Props} from "../userContext/user-context";
+import {Props, UserContext} from "../userContext/user-context";
+import {signOut} from "../userContext/sign_out";
 
 export default function Header({...props}) {
     const router = useRouter()
-    const {userState} = useContext<Props>(UserContext)
+    const {userState, userDispatch} = useContext<Props>(UserContext)
     const [isLogged, setIsLogged] = useState<boolean>(false)
 
-    useEffect(()=>{
-        userState.isLogged && setIsLogged(true)
-    },[userState.isLogged])
+    useEffect(() => {
+        setIsLogged(userState.isLogged)
+    }, [userState.isLogged])
 
     // const today = new Date();
     // const message = `Good ${(today.getHours() < 12 && 'Morning') || (today.getHours() < 17 && 'Afternoon') || 'Evening'} `; //then get current hours and we have a message :)
 
-    const signOut = () => {
-        const auth = new JtockAuth({
-            host: "https://3b8c4cc9dda0.ngrok.io",
-            prefixUrl: `/api/1/subscribers`,
-            debug: true
-        });
-        auth
-            .signOut()
-            .then(() => router.reload())
-            .catch(error => {
-                console.log(error);
-            });
+    const handleSignOut = () => {
+        localStorage.getItem('J-tockAuth-Storage') !== null && signOut(userState.channel, userDispatch)
+        router.reload()
+    //     const auth = new JtockAuth({
+    //         host: process.env.NEXT_PUBLIC_API_URL,
+    //         prefixUrl: `${userState.channel}/subscribers`,
+    //         debug: true
+    //     });
+    //     auth
+    //         .signOut()
+    //         .then(() => router.reload())
+    //         .catch(error => {
+    //             console.log(error);
+    //         });
     }
 
+    const handleChannelChange = (id: string | number) => {
+        localStorage.channel = id
+        userDispatch({type: 'FETCH_CHANNEL', channel: id})
+        localStorage.getItem('J-tockAuth-Storage') !== null && signOut(userState.channel, userDispatch)
+        router.replace({
+            pathname: '/',
+            query: {channel_id: id},
+        }, '/').then(r => console.log(r))
+    }
+    console.log(userState)
     return (
         <>
             <header className="sticky z-10 top-0">
@@ -90,7 +102,7 @@ export default function Header({...props}) {
                                         <Link href="/user/dashboard">My Account</Link>
                                     </button>
                                     <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => signOut()}>
+                                            onClick={() => handleSignOut()}>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
                                              width="24px"
                                              fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
@@ -181,6 +193,26 @@ export default function Header({...props}) {
                                     }
                                 </li>
                             </ul>}
+                            <div className="navbar-end">
+                                {props.data.channels && Object.keys(props.data.channels).length > 1 &&
+                                <div className="dropdown dropdown-end">
+                                    <div tabIndex={0} className="btn btn-ghost rounded-btn">Select Podcast</div>
+                                    <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-64">
+                                        {Object.keys(props.data.channels).map((value, index) =>
+                                            <li key={index}>
+                                                <a>
+                                                    <button
+                                                        className="focus:outline-none w-full"
+                                                        onClick={() => handleChannelChange(props.data.channels[index]['id'])}><span
+                                                        className="line-clamp-1">{props.data.channels[index]['title']}</span>
+                                                    </button>
+                                                </a>
+                                            </li>
+                                        )}
+                                    </ul>
+                                </div>
+                                }
+                            </div>
                         </div>
                         <div className="flex-none md:invisible">
                             <div className="dropdown dropdown-end">

@@ -5,8 +5,8 @@ import {Props, UserContext} from "../../components/userContext/user-context";
 
 const Login: React.FC = () => {
     const router = useRouter()
-
-    const {userDispatch} = useContext<Props>(UserContext)
+    const [loginError, setLoginError] = useState<string>('')
+    const {userState, userDispatch} = useContext<Props>(UserContext)
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -21,8 +21,8 @@ const Login: React.FC = () => {
         console.log('handleSubmit')
         e.preventDefault();
         const auth = new JtockAuth({
-            host: "https://3b8c4cc9dda0.ngrok.io",
-            prefixUrl: `/api/1/subscribers`,
+            host: process.env.NEXT_PUBLIC_API_URL,
+            prefixUrl: `${userState.channel}/subscribers`,
             debug: true
         });
         userDispatch({type: 'LOADING'})
@@ -34,6 +34,7 @@ const Login: React.FC = () => {
             })
             .catch(error => {
                 userDispatch({type: 'ERROR'})
+                setLoginError('Please verify your credentials and try again.')
                 console.log(error);
             });
     }
@@ -54,8 +55,9 @@ const Login: React.FC = () => {
                                placeholder="Enter A Password"/>
                         <a href="#" className="label-text-alt">Forgot username?</a>
                         <div className="form-control justify-center mt-5">
+                            <div className='text-error'>{loginError !== '' && loginError}</div>
                             <button
-                                className="btn btn-outline">
+                                className={userState.isLoading ? "btn btn-outline loading" : "btn btn-outline"}>
                                 Sign In
                             </button>
                         </div>
