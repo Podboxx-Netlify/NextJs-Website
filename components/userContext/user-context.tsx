@@ -3,12 +3,13 @@ import UserReducer from "./user-reducer";
 import JtockAuth from "j-tockauth";
 
 export interface Props {
-    userState?: { isLoading: boolean; isLogged: boolean; user: {}; error: boolean; channel: number | string }
+    userState?: { isLoading: boolean; isLogged: boolean; user: {}; error: boolean; channel: number | string; subscriptions: string[] }
     userDispatch?: React.Dispatch<any>
     isLoading: boolean
     isLogged: boolean
     user: {}
     channel: number | string
+    subscriptions: string[]
     error: boolean
 }
 
@@ -17,37 +18,17 @@ const initialState = {
     isLogged: false,
     user: {},
     channel: null,
+    subscriptions: [],
     error: false
 }
 
 const UserProvider = ({children}) => {
     const [userState, userDispatch] = useReducer(UserReducer, initialState)
-    // const isLogged = () => {
-    //     let headers;
-    //     if (typeof window !== 'undefined') {
-    //         const auth = new JtockAuth({
-    //             host: process.env.NEXT_PUBLIC_API_URL,
-    //             prefixUrl: `${process.env.NEXT_PUBLIC_STATION_ID}/subscribers`,
-    //             debug: true
-    //         });
-    //         headers = auth.tokenHeaders()
-    //         return new Promise(async (resolve, reject) => {
-    //             try {
-    //                 const response = await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}1/subscribers/profile`, {
-    //                     params: {
-    //                         uid: headers.uid,
-    //                         client: headers.client,
-    //                         "access-token": headers["access-token"]
-    //                     }
-    //                 });
-    //                 console.log(response.headers);
-    //                 resolve(response.data);
-    //             } catch (err) {
-    //                 reject(err);
-    //             }
-    //         });
-    //     }
-    // }
+
+    useEffect(() => {
+        fetchChannel()
+    }, [])
+
     const isAuth = () => {
         if (typeof window !== 'undefined') {
             const auth = new JtockAuth({
@@ -55,8 +36,8 @@ const UserProvider = ({children}) => {
                 prefixUrl: `${userState.channel}/subscribers`,
                 debug: true
             });
-            userDispatch({type: 'LOADING'})
             localStorage.getItem('J-tockAuth-Storage') !== null &&
+            userDispatch({type: 'LOADING'})
             auth.validateToken(auth.tokenHeaders()).then(r => userDispatch({
                 type: 'VERIFY_LOGIN',
                 user: r.data
@@ -64,6 +45,7 @@ const UserProvider = ({children}) => {
 
         }
     }
+
     const fetchChannel = () => {
         if (typeof window !== 'undefined') {
             localStorage.getItem('channel') !== null &&
@@ -71,9 +53,7 @@ const UserProvider = ({children}) => {
             isAuth()
         }
     }
-    useEffect(() => {
-        fetchChannel()
-    }, [])
+
     return (
         // @ts-ignore
         <UserContext.Provider value={{userState, userDispatch}}>

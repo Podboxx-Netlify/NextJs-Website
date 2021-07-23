@@ -23,23 +23,9 @@ export default function Header({...props}) {
         setIsLogged(userState.isLogged)
     }, [userState.isLogged])
 
-    // const today = new Date();
-    // const message = `Good ${(today.getHours() < 12 && 'Morning') || (today.getHours() < 17 && 'Afternoon') || 'Evening'} `; //then get current hours and we have a message :)
-
     const handleSignOut = () => {
         localStorage.getItem('J-tockAuth-Storage') !== null && signOut(userState.channel, userDispatch)
         router.reload()
-    //     const auth = new JtockAuth({
-    //         host: process.env.NEXT_PUBLIC_API_URL,
-    //         prefixUrl: `${userState.channel}/subscribers`,
-    //         debug: true
-    //     });
-    //     auth
-    //         .signOut()
-    //         .then(() => router.reload())
-    //         .catch(error => {
-    //             console.log(error);
-    //         });
     }
 
     const handleChannelChange = (id: string | number) => {
@@ -51,7 +37,8 @@ export default function Header({...props}) {
             query: {channel_id: id},
         }, '/').then(r => console.log(r))
     }
-    console.log(userState)
+
+    console.log('index UserState ', userState)
     return (
         <>
             <header className="sticky z-10 top-0">

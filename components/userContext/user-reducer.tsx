@@ -47,6 +47,7 @@ function userReducer(state, action) {
             error: false
         }
         case 'FETCH_SUBSCRIPTIONS': return {
+            ...state,
             isLoading: false,
             subscriptions: action.subscriptions,
             error: false

@@ -1,9 +1,15 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useState} from "react";
 import JtockAuth from "j-tockauth";
 import {Props, UserContext} from "../../components/userContext/user-context";
+import validator from 'validator';
+
+interface Errors {
+    email?: string[]
+}
 
 const Register: React.FC = () => {
-    const [error, setError] = useState<string>('')
+    const [error, setError] = useState<string[]>([])
+    const [passwordScore, setPasswordScore] = useState<number>(0)
     const {userState, userDispatch} = useContext<Props>(UserContext)
     const [formData, setFormData] = useState({
         first_name: '',
@@ -18,13 +24,29 @@ const Register: React.FC = () => {
         setFormData(data => ({...data, [e.target.id]: e.target.value}))
     }
 
-    const verifyData = () => {
+    // const handleErrors = (key: string, value: string) => {
+    //     setError({
+    //         ...error,
+    //         [key]: value
+    //     })
+    // }
 
+    const verifyData = () => {
+        !validator.isEmail(formData.email) && error.push('Email is invalid.')
+        !validator
+        console.log(validator.isEmail(formData.email))
+    }
+
+    const onPasswordChange = (e) => {
+        handleChange(e)
+        setPasswordScore(validator.isStrongPassword(e.target.value,{returnScore: true}))
+        console.log(passwordScore)
     }
 
     const handleSubmit = (e) => {
         e.preventDefault();
         e.stopPropagation();
+        verifyData()
         const auth = new JtockAuth({
             host: process.env.NEXT_PUBLIC_API_URL,
             prefixUrl: `${userState.channel}/subscribers`,
@@ -47,7 +69,7 @@ const Register: React.FC = () => {
             })
             .catch(error => {
                 userDispatch({type: 'ERROR'})
-                setError('There was an error when creating your account.')
+                // setError('There was an error when creating your account.')
                 console.log(error);
             });
     }
@@ -74,15 +96,16 @@ const Register: React.FC = () => {
                                placeholder="Enter Your Email"/>
                         <label className="label"><span className="label-text">Password</span></label>
                         <input className="input input-bordered w-full" type="password"
-                               name="password" id="password" value={formData.password} onChange={handleChange}
+                               name="password" id="password" value={formData.password} onChange={onPasswordChange}
                                placeholder="Enter A Password"/>
+                        <progress className={passwordScore > 30 ? "progress progress-success":"progress progress-error"} value={passwordScore} max={60}/>
                         <label className="label"><span className="label-text">Confirm Password</span></label>
                         <input className="input input-bordered w-full" type="password"
                                name="password_confirmation" id="password_confirmation"
                                value={formData.password_confirmation} onChange={handleChange}
                                placeholder="Re-Enter Your Password"/>
                         <div className="form-control justify-center mt-5">
-                            <div className='text-error'>{error !== '' && error}</div>
+                            {/*<div className='text-error'>{error !== '' && error}</div>*/}
                             <button
                                 className={userState.isLoading ? "btn btn-outline loading" : "btn btn-outline"}>
                                 Sign Up

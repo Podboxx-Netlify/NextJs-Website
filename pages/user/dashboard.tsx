@@ -2,24 +2,22 @@ import React, {useContext, useEffect, useState} from "react";
 import {client, hostedFields} from "braintree-web"
 import Axios from "axios";
 import {Props, UserContext} from "../../components/userContext/user-context";
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
 
 const Dashboard: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false)
-    const {userState} = useContext<Props>(UserContext)
+    const {userState, userDispatch} = useContext<Props>(UserContext)
     const [payment_methods, setPaymentMethods] = useState([])
     const [error, setError] = useState<string[]>()
     const [alert, setAlert] = useState(false);
     const [channelPlans, setChannelPlans] = useState([])
-    dayjs.extend(utc)
+
     useEffect(() => {
         getToken().then(token => instance(token))
     }, [])
 
     useEffect(() => {
-        listChannelPlans().then(r => console.log(r))
-    },[])
+        userState.channel !== null && listChannelPlans().then(r => console.log(r))
+    }, [])
 
     useEffect(() => {
         if (alert === false) {
@@ -34,8 +32,8 @@ const Dashboard: React.FC = () => {
 
     const getToken = async () => {
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
-        const response = await Axios.get(`https://3b8c4cc9dda0.ngrok.io/payment_methods/client_token`)
-        const payment_res = await Axios.get(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods`,
+        const response = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/client_token`)
+        const payment_res = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
             {
                 params: {
                     uid: headers['uid'],
@@ -44,6 +42,14 @@ const Dashboard: React.FC = () => {
                 }
             })
         console.log(payment_res.data.length > 0, payment_res.data)
+        console.log(Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
+            {
+                params: {
+                    uid: headers['uid'],
+                    client: headers['client'],
+                    "access-token": headers["access-token"]
+                }
+            }))
         setPaymentMethods(payment_res.data)
         return response.data.client_token
     }
@@ -58,6 +64,67 @@ const Dashboard: React.FC = () => {
             }
             createHostedFields(clientInstance);
         });
+    }
+
+
+    const handleSubmit = async (nonce: string) => {
+        setLoading(true)
+        const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
+        console.log(payment_methods, payment_methods.length > 0)
+        const payment_res = await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
+            {
+                params: {
+                    uid: headers['uid'],
+                    client: headers['client'],
+                    "access-token": headers["access-token"]
+                }
+            })
+        if (payment_res.data.length > 0) {
+            await Axios.put(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/null`,
+                {
+                    nonce_from_the_client: nonce,
+                    uid: headers['uid'],
+                    client: headers['client'],
+                    "access-token": headers["access-token"]
+                }).then(r => console.log(r))
+            setLoading(false)
+        } else {
+            await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
+                {
+                    nonce_from_the_client: nonce,
+                    uid: headers['uid'],
+                    client: headers['client'],
+                    "access-token": headers["access-token"]
+                }).then(r => console.log(r))
+            setLoading(false)
+        }
+        setAlert(true)
+    }
+
+    const listChannelPlans = async () => {
+        await Axios.get(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/subscription_plans/list`).then(r => console.log(r))
+    }
+
+    const handleCreatePlan = async () => {
+        const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
+        const payment_res = await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
+            {
+                params: {
+                    uid: headers['uid'],
+                    client: headers['client'],
+                    "access-token": headers["access-token"]
+                }
+            })
+        console.log(payment_res.data)
+        await Axios.post(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/create_subscription`,
+            {
+                subscriber_id: userState.user['id'],
+                payment_token: payment_res.data.payment_methods[0].token,
+                selected_plan: 19,
+                uid: headers['uid'],
+                client: headers['client'],
+                "access-token": headers["access-token"]
+            }).then(r => console.log(r))
     }
 
     const createHostedFields = (clientInstance) => {
@@ -114,70 +181,6 @@ const Dashboard: React.FC = () => {
             form.addEventListener('submit', tokenize, false);
         });
     }
-
-    const handleSubmit = async (nonce: string) => {
-        setLoading(true)
-        const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
-        console.log(payment_methods, payment_methods.length > 0)
-        const payment_res = await Axios.get(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods`,
-            {
-                params: {
-                    uid: headers['uid'],
-                    client: headers['client'],
-                    "access-token": headers["access-token"]
-                }
-            })
-        if (payment_res.data.length > 0) {
-            await Axios.put(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods/plotte`,
-                {
-                    nonce_from_the_client: nonce,
-                    uid: headers['uid'],
-                    client: headers['client'],
-                    "access-token": headers["access-token"]
-                }).then(r => console.log(r))
-            setLoading(false)
-        } else {
-            await Axios.post(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods`,
-                {
-                    nonce_from_the_client: nonce,
-                    uid: headers['uid'],
-                    client: headers['client'],
-                    "access-token": headers["access-token"]
-                }).then(r => console.log(r))
-            setLoading(false)
-        }
-        setAlert(true)
-    }
-
-    const listChannelPlans = async () => {
-        await Axios.get(`https://3b8c4cc9dda0.ngrok.io/1/subscription_plans/list`).then(r => console.log(r))
-    }
-
-    const handleCreatePlan = async () => {
-        const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
-        const payment_res = await Axios.get(`https://3b8c4cc9dda0.ngrok.io/api/1/subscribers/14/payment_methods`,
-            {
-                params: {
-                    uid: headers['uid'],
-                    client: headers['client'],
-                    "access-token": headers["access-token"]
-                }
-            })
-        console.log(payment_res.data)
-        let start_date
-        console.log(Date.now().toString())
-        await Axios.post(`https://3b8c4cc9dda0.ngrok.io/1/payment/create_subscription`,
-            {
-                subscriber_id: userState.user['id'],
-                payment_token: payment_res.data[0].token,
-                selected_plan: 19,
-                // start_date: dayjs(),
-                uid: headers['uid'],
-                client: headers['client'],
-                "access-token": headers["access-token"]
-            }).then(r => console.log(r))
-    }
-    console.log(Date.now().toString())
     return (
         <div className="w-full grid place-items-center mt-10">
             <div className="p-2 card bg-08dp shadow-md">
@@ -218,7 +221,8 @@ const Dashboard: React.FC = () => {
                                             {payment_methods.length > 0 ? 'Update' : 'Create'}
                                         </button>
                                     </div>
-                                </form>handleTestPlan
+                                </form>
+                                handleTestPlan
                             </div>
                         </div>
                         <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content ml-5">
