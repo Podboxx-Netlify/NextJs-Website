@@ -28,8 +28,8 @@ export default function Header({...props}) {
         router.reload()
     }
 
-    const handleChannelChange = (id: string | number) => {
-        localStorage.channel = id
+    const handleChannelChange = (id: string) => {
+        localStorage.setItem('channel', id)
         userDispatch({type: 'FETCH_CHANNEL', channel: id})
         localStorage.getItem('J-tockAuth-Storage') !== null && signOut(userState.channel, userDispatch)
         router.replace({
@@ -49,15 +49,38 @@ export default function Header({...props}) {
                     </div>
                     <div className="navbar-center hidden px-2 mx-2 lg:flex">
                         <div className="flex items-stretch">
-                            {/*{props.userData?.success === true &&*/}
-                            {/*<span className='text-lg select-none'>{message} {props.userData?.data?.first_name}</span>*/}
-                            {/*}*/}
                             <a className="btn btn-ghost btn-sm rounded-btn" onClick={() => router.replace('/')}>
                                 Home
                             </a>
-                            {isLogged !== true ?
+                            {userState.isLogged ?
                                 <>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => router.push({
+                                                pathname: '/user/dashboard',
+                                                query: {channel_id: userState.channel}
+                                            })}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                             width="24px" fill="#FFFFFF" strokeWidth="2"
+                                             className="inline-block w-5 mr-2 stroke-current">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        My Account
+                                    </button>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => signOut(userState.channel, userDispatch)}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                             width="24px" fill="#FFFFFF" strokeWidth="2"
+                                             className="inline-block w-5 mr-2 stroke-current">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        Sign Out
+                                    </button>
+                                </> :
+                                <>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => router.push('/user/login')}>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
                                              width="24px"
                                              fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
@@ -67,7 +90,8 @@ export default function Header({...props}) {
                                         </svg>
                                         <Link href="/user/login">Sign In</Link>
                                     </button>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => router.push('/user/register')}>
                                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
                                              width="24px"
                                              fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
@@ -76,28 +100,6 @@ export default function Header({...props}) {
                                                 d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                         </svg>
                                         <Link href="/user/register">Register</Link>
-                                    </button>
-                                </> : <>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
-                                             width="24px"
-                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                             strokeWidth="2">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        <Link href="/user/dashboard">My Account</Link>
-                                    </button>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => handleSignOut()}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
-                                             width="24px"
-                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                             strokeWidth="2">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        Sign Out
                                     </button>
                                 </>}
                         </div>

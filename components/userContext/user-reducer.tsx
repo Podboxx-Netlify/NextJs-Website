@@ -11,7 +11,7 @@ function userReducer(state, action) {
             ...state,
             isLogged: true,
             isLoading: false,
-            user: action.user,
+            user: {},
             error: false
         }
         case 'SIGN_OUT': return {
