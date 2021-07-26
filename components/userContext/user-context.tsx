@@ -30,27 +30,24 @@ const UserProvider = ({children}) => {
     }, [])
 
     const isAuth = () => {
-        if (typeof window !== 'undefined') {
-            const auth = new JtockAuth({
-                host: process.env.NEXT_PUBLIC_API_URL,
-                prefixUrl: `${userState.channel}/subscribers`,
-                debug: true
-            });
-            localStorage.getItem('J-tockAuth-Storage') !== null &&
-            userDispatch({type: 'LOADING'})
-            auth.validateToken(auth.tokenHeaders()).then(r => userDispatch({
-                type: 'VERIFY_LOGIN',
-                user: r.data
-            })).catch(() => userDispatch({type: 'ERROR'}))
-
-        }
+        const auth = new JtockAuth({
+            host: process.env.NEXT_PUBLIC_API_URL,
+            prefixUrl: `${userState.channel}/subscribers`,
+            debug: true
+        });
+        localStorage.getItem('J-tockAuth-Storage') !== null &&
+        userDispatch({type: 'LOADING'})
+        auth.validateToken(auth.tokenHeaders()).then(r => userDispatch({
+            type: 'VERIFY_LOGIN',
+            user: r.data
+        })).catch(() => userDispatch({type: 'ERROR'}))
     }
 
     const fetchChannel = () => {
         if (typeof window !== 'undefined') {
             localStorage.getItem('channel') !== null &&
-            userDispatch({type: 'FETCH_CHANNEL', channel: localStorage.getItem('channel')})
-            isAuth()
+            userDispatch({type: 'FETCH_CHANNEL', channel: localStorage.getItem('channel')});
+            userState.channel !== null && isAuth()
         }
     }
 

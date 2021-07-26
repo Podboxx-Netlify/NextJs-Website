@@ -17,16 +17,6 @@ import {signOut} from "../userContext/sign_out";
 export default function Header({...props}) {
     const router = useRouter()
     const {userState, userDispatch} = useContext<Props>(UserContext)
-    const [isLogged, setIsLogged] = useState<boolean>(false)
-
-    useEffect(() => {
-        setIsLogged(userState.isLogged)
-    }, [userState.isLogged])
-
-    const handleSignOut = () => {
-        localStorage.getItem('J-tockAuth-Storage') !== null && signOut(userState.channel, userDispatch)
-        router.reload()
-    }
 
     const handleChannelChange = (id: string) => {
         localStorage.setItem('channel', id)
@@ -38,7 +28,6 @@ export default function Header({...props}) {
         }, '/').then(r => console.log(r))
     }
 
-    console.log('index UserState ', userState)
     return (
         <>
             <header className="sticky z-10 top-0">

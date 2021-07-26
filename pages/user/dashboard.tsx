@@ -34,7 +34,12 @@ interface CustomerInfo {
         payment_type: string
         token: string
     }[]
-    customer: {}
+    customer: {
+        next_billing_date: string
+        plan_id: string
+        price: string
+        state: string
+    }
 
 }
 
@@ -78,7 +83,6 @@ const Dashboard: React.FC = () => {
                     "access-token": headers["access-token"]
                 }
             })
-        console.log(payment_res.data?.length && payment_res.data.length > 0, payment_res.data)
         setCustomerInfo(payment_res.data)
         return response && response.data.client_token
     }
@@ -95,20 +99,24 @@ const Dashboard: React.FC = () => {
         });
     }
 
+    const destroyPaymentMethod = async (token: string) => {
+        const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
+        await Axios.delete(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/${token}`, {
+            headers: {
+                uid: headers['uid'],
+                client: headers['client'],
+                "access-token": headers["access-token"]
+            }
+        })
+            .then(() => router.reload())
+            .catch(err => userDispatch({type: 'ERROR'}))
+    }
+
     const handleSubmit = async (nonce: string) => {
         setLoading(true)
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
-        // console.log(payment_methods, payment_methods.length > 0)
-        const payment_res = await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
-            {
-                params: {
-                    uid: headers['uid'],
-                    client: headers['client'],
-                    "access-token": headers["access-token"]
-                }
-            })
         if (userState.user['id'] !== null) {
-            if (payment_res.data.length > 0) {
+            if (customerInfo?.payment_methods.length > 0) {
                 await Axios.put(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/null`,
                     {
                         nonce_from_the_client: nonce,
@@ -215,25 +223,26 @@ const Dashboard: React.FC = () => {
                         <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content">
                             <div className="card-body">
                                 <p className="text-xl">Payment Method</p>
+                                {customerInfo?.payment_methods[0] !== undefined &&
                                 <div className='rounded-box border border-primary p-4 whitespace-nowrap mr-5 my-2'>
                                     <div className='whitespace-nowrap text-lg'>
-                                        {customerInfo !== undefined && customerInfo.payment_methods[0].expiration_month + '/' + customerInfo.payment_methods[0].expiration_year + ' '}
-                                        {customerInfo !== undefined && customerInfo.payment_methods[0].number}
+                                        {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods[0].expiration_month + '/' + customerInfo.payment_methods[0].expiration_year + ' '}
+                                        {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods[0].number}
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img className='float-left mr-2'
-                                             src={customerInfo !== undefined ? customerInfo.payment_methods[0]['image_url'] : ''}
-                                             alt={customerInfo !== undefined ? customerInfo.payment_methods[0]['payment_type'] : ''}/>
+                                             src={customerInfo?.payment_methods[0] !== undefined ? customerInfo.payment_methods[0]['image_url'] : ''}
+                                             alt={customerInfo?.payment_methods[0] !== undefined ? customerInfo.payment_methods[0]['payment_type'] : ''}/>
                                         <button
                                             className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap float-right"
-                                            onClick={(e) => console.log(e)}>Delete
+                                            onClick={() => destroyPaymentMethod(customerInfo.payment_methods[0].token)}>Delete
                                         </button>
                                     </div>
-
                                 </div>
+                                }
                                 <div className="collapse w-96 rounded-box border border-base-300 collapse-arrow">
                                     <input type="checkbox"/>
                                     <div className="collapse-title text-xl font-medium">
-                                        {customerInfo !== undefined && customerInfo.payment_methods.length > 0 ? "Edit Payment Method" : "Add a Payment Method"}
+                                        {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods.length > 0 ? "Edit Payment Method" : "Add a Payment Method"}
                                     </div>
                                     <div className="collapse-content">
                                         <form id="cardForm">
@@ -251,8 +260,8 @@ const Dashboard: React.FC = () => {
                                             <div className='text-center mt-3'>
                                                 <button
                                                     className={loading ? "btn btn-primary loading" : "btn btn-primary"}
-                                                    type='submit' onClick={() => router.reload()}>
-                                                    {customerInfo !== undefined && customerInfo.payment_methods.length > 0 ? 'Update' : 'Create'}
+                                                    type='submit'>
+                                                    {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods.length > 0 ? 'Update' : 'Create'}
                                                 </button>
                                             </div>
                                         </form>
