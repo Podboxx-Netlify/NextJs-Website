@@ -26,13 +26,15 @@ const UserProvider = ({children}) => {
     const [userState, userDispatch] = useReducer(UserReducer, initialState)
 
     useEffect(() => {
-        fetchChannel()
+        if (typeof window !== 'undefined') {
+            fetchChannel()
+        }
     }, [])
 
     const isAuth = () => {
         const auth = new JtockAuth({
             host: process.env.NEXT_PUBLIC_API_URL,
-            prefixUrl: `${userState.channel}/subscribers`,
+            prefixUrl: `${localStorage.getItem('channel')}/subscribers`,
             debug: true
         });
         localStorage.getItem('J-tockAuth-Storage') !== null &&
@@ -44,11 +46,9 @@ const UserProvider = ({children}) => {
     }
 
     const fetchChannel = () => {
-        if (typeof window !== 'undefined') {
-            localStorage.getItem('channel') !== null &&
-            userDispatch({type: 'FETCH_CHANNEL', channel: localStorage.getItem('channel')});
-            userState.channel !== null && isAuth()
-        }
+        localStorage.getItem('channel') !== null &&
+        userDispatch({type: 'FETCH_CHANNEL', channel: localStorage.getItem('channel')});
+        localStorage.getItem('channel') !== null && isAuth()
     }
 
     return (

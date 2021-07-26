@@ -10,13 +10,13 @@ export default function PrivateRoute({ protectedRoutes, children }) {
 
     const pathIsProtected = protectedRoutes.indexOf(router.pathname) !== -1;
 
-    useEffect(() => {
-        if (!userState.isLoading && !userState.isLogged && pathIsProtected) {
-            console.log('redirect', !userState.isLoading, !userState.isLogged, pathIsProtected)
-            // Redirect route, you can point this to /login
-            router.push('/user/login');
-        }
-    }, [userState.isLoading, userState.isLogged, pathIsProtected]);
+    // useEffect(() => {
+    //     if (!userState.isLoading && !userState.isLogged && !userState.isLoading && pathIsProtected) {
+    //         console.log('redirect', !userState.isLoading, !userState.isLogged, pathIsProtected)
+    //         // Redirect route, you can point this to /login
+    //         router.push('/user/login').then();
+    //     }
+    // }, [userState, pathIsProtected]);
 
     if ((userState.isLoading || !userState.isLogged) && pathIsProtected) {
         return <FullScreenLoader />;

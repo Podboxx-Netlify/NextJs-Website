@@ -59,7 +59,7 @@ const Blog: React.FC<{ data: Data }> = ({data}) => {
             pathname: '/',
             query: {channel_id: localStorage.channel},
         }, '/')
-    },[router.query.channel])
+    },[router.query.channel, userState.channel])
 
     useEffect(() => {
         router.query.tags === undefined && setTagFilter([])
@@ -68,7 +68,10 @@ const Blog: React.FC<{ data: Data }> = ({data}) => {
     useEffect(() => {
         if (tagFilter.length > 0) {
             let tags = encodeURIComponent(tagFilter.join(","))
-            router.push(`/?tags=${tags}`).then()
+            router.push({
+                pathname: '/',
+                query: {tags: tags, channel_id: userState.channel}
+        }).then()
         } else {
             router.push('/').then()
         }

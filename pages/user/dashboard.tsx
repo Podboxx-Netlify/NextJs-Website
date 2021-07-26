@@ -3,27 +3,7 @@ import {client, hostedFields} from "braintree-web"
 import Axios from "axios";
 import {Props, UserContext} from "../../components/userContext/user-context";
 import {useRouter} from "next/router";
-// export const getServerSideProps: GetServerSideProps = async (ctx) => {
-//     console.log(ctx.req)
-//     const isLogged = await ctx.req.headers['isLogged'];
-//
-//     if(!isLogged){
-//         return{
-//             redirect:{
-//                 destination: '/user/login', //usually the login page
-//                 permanent: false,
-//             }
-//         }
-//     }
-//
-//     return{
-//         props: {
-//             authenticated: true
-//         }
-//     }
-//
-//     // return { props: { logged: false } }
-// }
+import {toast} from "react-toastify";
 
 interface CustomerInfo {
     payment_methods: {
@@ -39,38 +19,22 @@ interface CustomerInfo {
         plan_id: string
         price: string
         state: string
-    }
-
+    }[]
+    subscriptions: string[]
 }
 
 const Dashboard: React.FC = () => {
     const router = useRouter();
-    const [alert, setAlert] = useState(false);
     const [error, setError] = useState<string[]>()
-    const [loading, setLoading] = useState<boolean>(false)
     const {userState, userDispatch} = useContext<Props>(UserContext)
     const [customerInfo, setCustomerInfo] = useState<CustomerInfo>()
     const [channelPlans, setChannelPlans] = useState([])
 
-    console.log(channelPlans, customerInfo)
     useEffect(() => {
-        if (!userState.isLogged) {
-            router.push('/user/login');
-        } else if (userState.isLogged) {
-            listChannelPlans().then(() => getToken().then(token => instance(token)));
+        if (userState.isLogged) {
+            listChannelPlans().then(() => getToken().then(res => instance(res.token, res._customerInfo)));
         }
     }, [userState.isLogged])
-
-    useEffect(() => {
-        if (alert === false) {
-            return
-        } else {
-            console.log('alert effect')
-            setTimeout(() => {
-                setAlert(false);
-            }, 3000);
-        }
-    }, [alert]);
 
     const getToken = async () => {
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
@@ -84,19 +48,7 @@ const Dashboard: React.FC = () => {
                 }
             })
         setCustomerInfo(payment_res.data)
-        return response && response.data.client_token
-    }
-
-    const instance = (token: string) => {
-        client.create({
-            authorization: token
-        }, (err, clientInstance) => {
-            if (err) {
-                console.error(err);
-                return;
-            }
-            createHostedFields(clientInstance);
-        });
+        return response && {token: response.data.client_token, _customerInfo: payment_res.data}
     }
 
     const destroyPaymentMethod = async (token: string) => {
@@ -109,24 +61,22 @@ const Dashboard: React.FC = () => {
             }
         })
             .then(() => router.reload())
-            .catch(err => userDispatch({type: 'ERROR'}))
+            .catch(() => userDispatch({type: 'ERROR'}))
     }
 
-    const handleSubmit = async (nonce: string) => {
-        setLoading(true)
+    const handleSubmit = async (nonce: string, _customerInfo: CustomerInfo) => {
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
         if (userState.user['id'] !== null) {
-            if (customerInfo?.payment_methods.length > 0) {
-                await Axios.put(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/null`,
+            if (_customerInfo.payment_methods.length > 0) {
+                await Axios.put(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/${_customerInfo.payment_methods[0].token}`,
                     {
                         nonce_from_the_client: nonce,
                         uid: headers['uid'],
                         client: headers['client'],
                         "access-token": headers["access-token"]
                     })
-                    .then(r => console.log(r))
+                    .then(r => router.reload())
                     .catch(err => userDispatch({type: 'ERROR'}))
-                setLoading(false)
             } else {
                 await Axios.post(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
                     {
@@ -135,12 +85,19 @@ const Dashboard: React.FC = () => {
                         client: headers['client'],
                         "access-token": headers["access-token"]
                     })
-                    .then(r => console.log(r))
-                    .catch(err => userDispatch({type: 'ERROR'}))
-                setLoading(false)
+                    .then(r => router.reload())
+                    .catch(() => userDispatch({type: 'ERROR'}))
             }
         }
-        setAlert(true)
+        toast.success('Success!', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
     }
 
     const listChannelPlans = async () => {
@@ -157,10 +114,34 @@ const Dashboard: React.FC = () => {
                 uid: headers['uid'],
                 client: headers['client'],
                 "access-token": headers["access-token"]
-            }).then(r => console.log(r))
+            }).then(r => router.reload())
     }
-    console.log(customerInfo)
-    const createHostedFields = (clientInstance) => {
+
+    const handleCancelPlan = async (subscription_id) => {
+        const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
+        await Axios.post(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/cancel_subscription`,
+            {
+                subscriber_id: userState.user['id'],
+                subscription_id: subscription_id,
+                uid: headers['uid'],
+                client: headers['client'],
+                "access-token": headers["access-token"]
+            }).then(r => router.reload())
+    }
+
+    const instance = (token: string, _customerInfo: CustomerInfo) => {
+        client.create({
+            authorization: token
+        }, (err, clientInstance) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            createHostedFields(clientInstance, _customerInfo);
+        });
+    }
+
+    const createHostedFields = (clientInstance, _customerInfo) => {
         hostedFields.create({
             client: clientInstance,
             styles: {
@@ -204,119 +185,118 @@ const Dashboard: React.FC = () => {
                         setError(err.details?.invalidFieldKeys)
                         return;
                     }
-                    handleSubmit(payload.nonce).then(r => console.log(r))
+                    handleSubmit(payload.nonce, _customerInfo).then(r => console.log(r))
                     hostedFieldsInstance.clear('number');
                     hostedFieldsInstance.clear('cvv');
                     hostedFieldsInstance.clear('expirationDate');
                 });
-
             };
             form.addEventListener('submit', tokenize, false);
         });
     }
+
     return (
         <div className="w-full grid place-items-center mt-10">
-            <div className="p-2 card bg-08dp shadow-md">
-                <div className="form-control card-body">
-                    <div className="text-center text-3xl font-bold card-title">Your Account</div>
-                    <div className="grid grid-cols-2 mx-10">
-                        <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content">
-                            <div className="card-body">
-                                <p className="text-xl">Payment Method</p>
-                                {customerInfo?.payment_methods[0] !== undefined &&
-                                <div className='rounded-box border border-primary p-4 whitespace-nowrap mr-5 my-2'>
-                                    <div className='whitespace-nowrap text-lg'>
-                                        {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods[0].expiration_month + '/' + customerInfo.payment_methods[0].expiration_year + ' '}
-                                        {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods[0].number}
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img className='float-left mr-2'
-                                             src={customerInfo?.payment_methods[0] !== undefined ? customerInfo.payment_methods[0]['image_url'] : ''}
-                                             alt={customerInfo?.payment_methods[0] !== undefined ? customerInfo.payment_methods[0]['payment_type'] : ''}/>
-                                        <button
-                                            className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap float-right"
-                                            onClick={() => destroyPaymentMethod(customerInfo.payment_methods[0].token)}>Delete
-                                        </button>
+            {userState.isLogged ?
+                <div className="p-2 card bg-08dp shadow-md">
+                    <div className="form-control card-body">
+                        <div className="text-center text-3xl font-bold card-title">Your Account</div>
+                        <div className="grid grid-cols-2 mx-10">
+                            <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content">
+                                <div className="card-body">
+                                    <p className="text-xl">Payment Method</p>
+                                    {customerInfo?.payment_methods[0] !== undefined &&
+                                    <div className='rounded-box border border-primary p-4 whitespace-nowrap mr-5 my-2'>
+                                        <div className='whitespace-nowrap text-lg'>
+                                            {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods[0].expiration_month + '/' + customerInfo.payment_methods[0].expiration_year + ' '}
+                                            {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods[0].number}
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img className='float-left mr-2'
+                                                 src={customerInfo?.payment_methods[0] !== undefined ? customerInfo.payment_methods[0]['image_url'] : ''}
+                                                 alt={customerInfo?.payment_methods[0] !== undefined ? customerInfo.payment_methods[0]['payment_type'] : ''}/>
+                                            <button
+                                                className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap float-right"
+                                                onClick={() => destroyPaymentMethod(customerInfo.payment_methods[0].token)}>Delete
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                }
-                                <div className="collapse w-96 rounded-box border border-base-300 collapse-arrow">
-                                    <input type="checkbox"/>
-                                    <div className="collapse-title text-xl font-medium">
-                                        {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods.length > 0 ? "Edit Payment Method" : "Add a Payment Method"}
-                                    </div>
-                                    <div className="collapse-content">
-                                        <form id="cardForm">
-                                            <label htmlFor="card-number"
-                                                   className={error?.includes('number') ? 'text-error' : ''}>
-                                                Card Number</label>
-                                            <div id="card-number" className="hosted-field mt-3"/>
-                                            <label htmlFor="expiration-date"
-                                                   className={error?.includes('expirationDate') ? 'text-error' : ''}>
-                                                Expiration Date</label>
-                                            <div id="expiration-date" className="hosted-field mt-3"/>
-                                            <label htmlFor="expiration-date"
-                                                   className={error?.includes('cvv') ? 'text-error' : ''}>CVV</label>
-                                            <div id="cvv" className="hosted-field mt-3"/>
-                                            <div className='text-center mt-3'>
-                                                <button
-                                                    className={loading ? "btn btn-primary loading" : "btn btn-primary"}
-                                                    type='submit'>
-                                                    {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods.length > 0 ? 'Update' : 'Create'}
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            {alert &&
-                            <div className="alert alert-success fixed my-auto">
-                                <div className="flex-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                         viewBox="0 0 24 24"
-                                         stroke="#2196f3"
-                                         className="w-6 h-6 mx-2">
-                                        <path strokeLinecap="round" strokeLinejoin="round"
-                                              strokeWidth="2"
-                                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <label>Success!</label>
-                                </div>
-                            </div>
-                            }
-                        </div>
-                        <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content ml-5">
-                            <div className="card-body">
-                                <p className="text-xl">Plans</p>
-                                {Object.keys(channelPlans).length > 0 &&
-                                <>
-                                    {Object.keys(channelPlans).map((value, index) =>
-                                        <div key={index}
-                                             className="collapse w-96 rounded-box border border-primary my-2 collapse-arrow bg-24dp">
-                                            <input type="checkbox"/>
-                                            <div className="collapse-title text-xl font-medium capitalize">
-                                                {value} <span
-                                                className="badge badge-primary ml-5">
-                                                    {'$' + channelPlans[value]['price']} {channelPlans[value]['billing_cycle'] <= 11 ? 'per month' : 'per year'}
-                                                    </span>
-                                            </div>
-                                            <div className="collapse-content">
-                                                <p>{channelPlans[value]['desc']}</p>
-                                                <div className="text-right">
+                                    }
+                                    <div className="collapse w-96 rounded-box border border-base-300 collapse-arrow">
+                                        <input type="checkbox"/>
+                                        <div className="collapse-title text-xl font-medium">
+                                            {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods.length > 0 ? "Edit Payment Method" : "Add a Payment Method"}
+                                        </div>
+                                        <div className="collapse-content">
+                                            <form id="cardForm">
+                                                <label htmlFor="card-number"
+                                                       className={error?.includes('number') ? 'text-error' : ''}>
+                                                    Card Number</label>
+                                                <div id="card-number" className="hosted-field mt-3"/>
+                                                <label htmlFor="expiration-date"
+                                                       className={error?.includes('expirationDate') ? 'text-error' : ''}>
+                                                    Expiration Date</label>
+                                                <div id="expiration-date" className="hosted-field mt-3"/>
+                                                <label htmlFor="expiration-date"
+                                                       className={error?.includes('cvv') ? 'text-error' : ''}>CVV</label>
+                                                <div id="cvv" className="hosted-field mt-3"/>
+                                                <div className='text-center mt-3'>
                                                     <button
-                                                        className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap justify-center"
-                                                        onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>Subscribe
+                                                        className={userState.isLoading ? "btn btn-primary loading" : "btn btn-primary"}
+                                                        type='submit'>
+                                                        {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods.length > 0 ? 'Update' : 'Create'}
                                                     </button>
                                                 </div>
-                                            </div>
+                                            </form>
                                         </div>
-                                    )}
-                                </>
-                                }
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content ml-5">
+                                <div className="card-body">
+                                    <p className="text-xl">Plans</p>
+                                    {Object.keys(channelPlans).length > 0 &&
+                                    <>
+                                        {Object.keys(channelPlans).map((value, index) =>
+                                            <div key={index}
+                                                 className={customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ? "w-96 rounded-box border border-accent my-2 bg-24dp":"w-96 rounded-box border border-primary my-2 bg-24dp"}>
+                                                {/*<input type="checkbox"/>*/}
+                                                <div className="collapse-title text-xl font-medium capitalize">
+                                                    {value} <span
+                                                    className={customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ? "badge badge-accent ml-5":"badge badge-primary ml-5"}>
+                                                    {'$' + channelPlans[value]['price']} {channelPlans[value]['billing_cycle'] <= 11 ? 'per month' : 'per year'}
+                                                    </span>
+                                                </div>
+                                                <div className="m-3">
+                                                    <p>
+                                                        {/*{channelPlans[value]['desc']}*/}
+                                                        {customerInfo?.customer.map((v, i) =>
+                                                            channelPlans[value]['braintree_id'] === v.plan_id &&
+                                                                <span key={i} className="text-accent">{v['status']}</span>
+                                                        )}
+                                                    </p>
+                                                    <div className="text-right">
+                                                        {customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ?
+                                                            <button
+                                                                className="btn btn-outline btn-accent btn-sm rounded-btn whitespace-nowrap"
+                                                                onClick={() => handleCancelPlan(customerInfo?.customer[0]['id'])}>Cancel subscription
+                                                            </button>:
+                                                            <button
+                                                                className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap justify-center"
+                                                                onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>Subscribe
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                </div> : <div className='text-2xl text-center my-auto'>Loading</div>}
         </div>
     )
 }
