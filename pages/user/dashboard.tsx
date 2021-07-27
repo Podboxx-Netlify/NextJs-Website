@@ -119,10 +119,19 @@ const Dashboard: React.FC = () => {
 
     const handleCancelPlan = async (subscription_id) => {
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
+        const profile = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`,
+            {
+                params: {
+                    uid: headers['uid'],
+                    client: headers['client'],
+                    "access-token": headers["access-token"]
+                }
+            })
+        console.log(profile.data)
         await Axios.post(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/cancel_subscription`,
             {
                 subscriber_id: userState.user['id'],
-                subscription_id: subscription_id,
+                subscription_id: profile.data.subscription.id,
                 uid: headers['uid'],
                 client: headers['client'],
                 "access-token": headers["access-token"]
@@ -258,11 +267,11 @@ const Dashboard: React.FC = () => {
                                     <>
                                         {Object.keys(channelPlans).map((value, index) =>
                                             <div key={index}
-                                                 className={customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ? "w-96 rounded-box border border-accent my-2 bg-24dp":"w-96 rounded-box border border-primary my-2 bg-24dp"}>
+                                                 className={customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ? "w-96 rounded-box border border-success my-2 bg-24dp" : "w-96 rounded-box border border-primary my-2 bg-24dp"}>
                                                 {/*<input type="checkbox"/>*/}
                                                 <div className="collapse-title text-xl font-medium capitalize">
                                                     {value} <span
-                                                    className={customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ? "badge badge-accent ml-5":"badge badge-primary ml-5"}>
+                                                    className={customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ? "badge badge-success ml-5":"badge badge-primary ml-5"}>
                                                     {'$' + channelPlans[value]['price']} {channelPlans[value]['billing_cycle'] <= 11 ? 'per month' : 'per year'}
                                                     </span>
                                                 </div>
@@ -271,20 +280,21 @@ const Dashboard: React.FC = () => {
                                                         {/*{channelPlans[value]['desc']}*/}
                                                         {customerInfo?.customer.map((v, i) =>
                                                             channelPlans[value]['braintree_id'] === v.plan_id &&
-                                                                <span key={i} className="text-accent">{v['status']}</span>
+                                                                <span key={i} className="text-success">{v['status']}</span>
                                                         )}
                                                     </p>
                                                     <div className="text-right">
-                                                        {customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ?
+                                                        {/*{customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ?*/}
                                                             <button
-                                                                className="btn btn-outline btn-accent btn-sm rounded-btn whitespace-nowrap"
+                                                                className="btn btn-success btn-block btn-sm rounded-btn whitespace-nowrap"
                                                                 onClick={() => handleCancelPlan(customerInfo?.customer[0]['id'])}>Cancel subscription
-                                                            </button>:
+                                                            </button>
+                                                        {/*:*/}
                                                             <button
-                                                                className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap justify-center"
+                                                                className="btn btn-primary btn-outline rounded-btn btn-sm whitespace-nowrap justify-center"
                                                                 onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>Subscribe
                                                             </button>
-                                                        }
+                                                        {/*}*/}
                                                     </div>
                                                 </div>
                                             </div>

@@ -121,7 +121,7 @@ module.exports = {
                     'base-300': '#343434',
                     'base-content': '#ffffff',
                     'info': '#2094f3',
-                    'success': '#009485',
+                    'success': '#0d9467',
                     'warning': '#ff9900',
                     'error': '#ff5724',
                 },

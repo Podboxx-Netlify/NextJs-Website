@@ -18,15 +18,26 @@ export default function Header({...props}) {
     const router = useRouter()
     const {userState, userDispatch} = useContext<Props>(UserContext)
     const [isLogged, setIsLogged] = useState(userState.isLogged)
+    const [currentChannel, setCurrentChannel] = useState(userState.channel)
 
     useEffect(() => {
         setIsLogged(userState.isLogged)
-    },[userState.isLogged])
+    }, [userState.isLogged])
 
+    useEffect(() => {
+        currentChannel?.toString() !== userState?.channel?.toString() && setCurrentChannel(userState.channel)
+    }, [userState.channel])
+
+    useEffect(() => {
+        // if (typeof window !== undefined) {
+        //     setCurrentChannel(localStorage.channel)
+        // }
+        setCurrentChannel(userState.channel)
+    },[])
 
     const handleChannelChange = (id: string) => {
         localStorage.setItem('channel', id)
-        userDispatch({type: 'FETCH_CHANNEL', channel: id})
+        userDispatch({type: 'FETCH_CHANNEL', channel: id.toString()})
         localStorage.getItem('J-tockAuth-Storage') !== null && signOut(userState.channel, userDispatch)
         router.replace({
             pathname: '/',
@@ -175,17 +186,18 @@ export default function Header({...props}) {
                                 </li>
                             </ul>}
                             <div className="navbar-end">
-                                {props.data.channels && Object.keys(props.data.channels).length > 1 &&
+                                {typeof window !== undefined && props.data.channels && Object.keys(props.data.channels).length > 1 &&
                                 <div className="dropdown dropdown-end">
-                                    <div tabIndex={0} className="btn btn-ghost rounded-btn">Select Podcast</div>
+                                    <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">Select Podcast</div>
                                     <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-64">
                                         {Object.keys(props.data.channels).map((value, index) =>
+                                            props.data.channels[index]['subscription_required'] === false &&
                                             <li key={index}>
                                                 <a>
                                                     <button
-                                                        className="focus:outline-none w-full"
-                                                        onClick={() => handleChannelChange(props.data.channels[index]['id'])}><span
-                                                        className="line-clamp-1">{props.data.channels[index]['title']}</span>
+                                                        className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500":"focus:outline-none w-full"}
+                                                        onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'])}>
+                                                        <span className="line-clamp-1">{props.data.channels[index]['title']}</span>
                                                     </button>
                                                 </a>
                                             </li>
@@ -209,7 +221,8 @@ export default function Header({...props}) {
                                         <li>
                                             <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
                                                     onClick={() => router.push('/user/dashboard')}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                                                     viewBox="0 0 24 24"
                                                      width="24px" fill="#FFFFFF" strokeWidth="2"
                                                      className="inline-block w-5 mr-2 stroke-current">
                                                     <path
@@ -219,7 +232,8 @@ export default function Header({...props}) {
                                             </button>
                                             <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
                                                     onClick={() => signOut(userState.channel, userDispatch)}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                                                     viewBox="0 0 24 24"
                                                      width="24px" fill="#FFFFFF" strokeWidth="2"
                                                      className="inline-block w-5 mr-2 stroke-current">
                                                     <path
@@ -231,7 +245,8 @@ export default function Header({...props}) {
                                         <li>
                                             <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
                                                     onClick={() => router.push('/user/login')}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                                                     viewBox="0 0 24 24"
                                                      width="24px"
                                                      fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
                                                      strokeWidth="2">
@@ -242,7 +257,8 @@ export default function Header({...props}) {
                                             </button>
                                             <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
                                                     onClick={() => router.push('/user/register')}>
-                                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                                <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                                                     viewBox="0 0 24 24"
                                                      width="24px"
                                                      fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
                                                      strokeWidth="2">
