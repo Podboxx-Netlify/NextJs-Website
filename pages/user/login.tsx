@@ -35,7 +35,7 @@ const Login: React.FC = () => {
             .catch(error => {
                 userDispatch({type: 'ERROR'})
                 setLoginError('Please verify your credentials and try again.')
-                console.log(error);
+                // console.log(error);
             });
     }
 

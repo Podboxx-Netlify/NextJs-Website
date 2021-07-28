@@ -1,9 +1,10 @@
 import React, {useContext, useEffect, useState} from 'react'
-import {GetServerSideProps} from 'next'
 import PostCard from "../components/post-card";
 import ReactPaginate from 'react-paginate';
 import {useRouter} from "next/router";
 import {Props, UserContext} from "../components/userContext/user-context";
+import useSWR from "swr";
+import fetcher from "../libs/fetcher"
 
 interface Data {
     website?: [title: string]
@@ -23,59 +24,24 @@ interface Episodes {
     tags?: Array<{ name: string }>
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    let uri
-    let baseUri = `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}`
-    if (context.query.tags !== undefined) {
-        uri = `${baseUri}/tags_blog?tags=${context.query.tags}&channel=${context.query.channel_id || null}`
-    } else {
-        uri = `${baseUri}/blog?channel=${context.query.channel_id || null}&page=${context.query.page || 1}`
-    }
-    const res = await fetch(uri)
-    if (res.status !== 200) {
-        const data = {}
-        return {
-            props: {
-                data,
-            },
-        }
-    } else {
-        const data: Data = await res.json()
-        return {
-            props: {
-                data,
-            },
-        }
-    }
-}
-
-const Blog: React.FC<{ data: Data }> = ({data}) => {
+const Blog: React.FC = () => {
     const router = useRouter()
     const [tagFilter, setTagFilter] = useState<string[]>([])
+    const [uri, setUri] = useState<string>('')
+    const baseUri = `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/`
+    const {data, error} = useSWR<Data>(uri, fetcher)
     const {userState} = useContext<Props>(UserContext)
-    console.log(userState)
+
     useEffect(() => {
-        localStorage.channel && localStorage.channel !== router.query.channel && router.replace({
-            pathname: '/',
-            query: {channel_id: localStorage.channel},
-        }, '/')
-    },[router.query.channel, userState.channel])
+        let tags = tagFilter.length > 0 ? `&tags=${encodeURIComponent(tagFilter.join(","))}` : ''
+        let channel = `channel=${userState.channel || null}`
+        let endpoint = tagFilter.length > 0 ? 'tags_blog?':'blog?'
+        setUri(baseUri + endpoint + channel + tags)
+    }, [userState.channel, tagFilter, baseUri])
 
     useEffect(() => {
         router.query.tags === undefined && setTagFilter([])
     }, [router.query.tags])
-
-    useEffect(() => {
-        if (tagFilter.length > 0) {
-            let tags = encodeURIComponent(tagFilter.join(","))
-            router.push({
-                pathname: '/',
-                query: {tags: tags, channel_id: userState.channel}
-        }).then()
-        } else {
-            router.push('/').then()
-        }
-    }, [tagFilter])
 
     const handleAddTag = (tag: string) => {
         return setTagFilter([...tagFilter, tag])
@@ -87,6 +53,10 @@ const Blog: React.FC<{ data: Data }> = ({data}) => {
     const handlePageClick = (data) => {
         router.push(`/?page=${data.selected + 1}`).then()
     }
+
+    if (error) return <div>failed to load</div>
+    if (!data) return <div>loading...</div>
+
     return (
         <>
             {data.podcasts && Object.keys(data.podcasts).length > 0 ?

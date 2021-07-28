@@ -10,6 +10,7 @@ import {
     faTwitter,
     faYoutube
 } from '@fortawesome/free-brands-svg-icons'
+import {faGem, faUserCircle} from '@fortawesome/free-regular-svg-icons'
 import {useRouter} from "next/router";
 import {Props, UserContext} from "../userContext/user-context";
 import {signOut} from "../userContext/sign_out";
@@ -33,11 +34,12 @@ export default function Header({...props}) {
         //     setCurrentChannel(localStorage.channel)
         // }
         setCurrentChannel(userState.channel)
-    },[])
+    }, [])
 
-    const handleChannelChange = (id: string) => {
-        localStorage.setItem('channel', id)
-        userDispatch({type: 'FETCH_CHANNEL', channel: id.toString()})
+    const handleChannelChange = (id: string, premium?: boolean) => {
+        localStorage.setItem('channel', id);
+        userDispatch({type: 'FETCH_CHANNEL', channel: id.toString()});
+        // if (premium === true) {}
         localStorage.getItem('J-tockAuth-Storage') !== null && signOut(userState.channel, userDispatch)
         router.replace({
             pathname: '/',
@@ -59,28 +61,50 @@ export default function Header({...props}) {
                                 Home
                             </a>
                             {isLogged ?
-                                <div className="invisible md:visible">
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => router.push('/user/dashboard')}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
-                                             width="24px" fill="#FFFFFF" strokeWidth="2"
-                                             className="inline-block w-5 mr-2 stroke-current">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        My Account
-                                    </button>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => signOut(userState.channel, userDispatch)}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
-                                             width="24px" fill="#FFFFFF" strokeWidth="2"
-                                             className="inline-block w-5 mr-2 stroke-current">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        Sign Out
-                                    </button>
-                                </div> :
+                                //
+                                <div className="dropdown dropdown-end invisible md:visible">
+                                    <div tabIndex={0} className="btn btn-sm"><FontAwesomeIcon icon={faUserCircle}
+                                                                                              className='mr-2'
+                                                                                              size='lg'/> My Account
+                                    </div>
+                                    <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-52">
+                                        <li>
+                                            <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                                    onClick={() => router.push('/user/dashboard')}>
+                                                Subscriptions
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                                    onClick={() => signOut(userState.channel, userDispatch)}>
+                                                Sign Out
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                // <div className="invisible md:visible">
+                                //     <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                //             onClick={() => router.push('/user/dashboard')}>
+                                //         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                //              width="24px" fill="#FFFFFF" strokeWidth="2"
+                                //              className="inline-block w-5 mr-2 stroke-current">
+                                //             <path
+                                //                 d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                //         </svg>
+                                //         My Account
+                                //     </button>
+                                //     <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                //             onClick={() => signOut(userState.channel, userDispatch)}>
+                                //         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                //              width="24px" fill="#FFFFFF" strokeWidth="2"
+                                //              className="inline-block w-5 mr-2 stroke-current">
+                                //             <path
+                                //                 d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                //         </svg>
+                                //         Sign Out
+                                //     </button>
+                                // </div>
+                                :
                                 <div className="invisible md:visible">
                                     <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
                                             onClick={() => router.push('/user/login')}>
@@ -188,19 +212,34 @@ export default function Header({...props}) {
                             <div className="navbar-end">
                                 {typeof window !== undefined && props.data.channels && Object.keys(props.data.channels).length > 1 &&
                                 <div className="dropdown dropdown-end">
-                                    <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">Select Podcast</div>
+                                    <div tabIndex={0}
+                                         className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">Select Podcast
+                                    </div>
                                     <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-64">
                                         {Object.keys(props.data.channels).map((value, index) =>
-                                            props.data.channels[index]['subscription_required'] === false &&
-                                            <li key={index}>
-                                                <a>
-                                                    <button
-                                                        className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500":"focus:outline-none w-full"}
-                                                        onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'])}>
-                                                        <span className="line-clamp-1">{props.data.channels[index]['title']}</span>
-                                                    </button>
-                                                </a>
-                                            </li>
+                                            props.data.channels[index]['subscription_required'] ?
+                                                <li key={index}>
+                                                    <a>
+                                                        <button
+                                                            className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500" : "focus:outline-none w-full"}
+                                                            onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'], true)}>
+                                                            <span
+                                                                className="line-clamp-1 font-semibold capitalize">
+                                                                <FontAwesomeIcon icon={faGem} size='sm'/>
+                                                                {props.data.channels[index]['title']}</span>
+                                                        </button>
+                                                    </a>
+                                                </li> :
+                                                <li key={index}>
+                                                    <a>
+                                                        <button
+                                                            className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500" : "focus:outline-none w-full"}
+                                                            onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'])}>
+                                                            <span
+                                                                className="line-clamp-1 capitalize">{props.data.channels[index]['title']}</span>
+                                                        </button>
+                                                    </a>
+                                                </li>
                                         )}
                                     </ul>
                                 </div>

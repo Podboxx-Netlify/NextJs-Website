@@ -35,18 +35,18 @@ const UserProvider = ({children}) => {
         const auth = new JtockAuth({
             host: process.env.NEXT_PUBLIC_API_URL,
             prefixUrl: `${localStorage.getItem('channel')}/subscribers`,
-            debug: true
+            debug: false
         });
         localStorage.getItem('J-tockAuth-Storage') !== null &&
         userDispatch({type: 'LOADING'})
         auth.validateToken(auth.tokenHeaders()).then(r => userDispatch({
             type: 'VERIFY_LOGIN',
             user: r.data
-        })).catch(() => userDispatch({type: 'ERROR'}))
+        })).catch(() => localStorage.getItem('J-tockAuth-Storage') !== null && auth.signOut())
     }
 
     const fetchChannel = () => {
-        localStorage.getItem('channel') !== null &&
+        localStorage.getItem('channel') !== null && localStorage.getItem('channel') !== userState.channel &&
         userDispatch({type: 'FETCH_CHANNEL', channel: localStorage.getItem('channel')});
         localStorage.getItem('channel') !== null && isAuth()
     }

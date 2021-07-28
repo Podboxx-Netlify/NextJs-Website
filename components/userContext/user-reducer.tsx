@@ -5,6 +5,7 @@ function userReducer(state, action) {
     switch (action.type) {
         case 'SIGN_IN': {
             NProgress.done()
+            console.log('SIGN_IN')
             return {
                 ...state,
                 isLogged: true,
@@ -14,6 +15,7 @@ function userReducer(state, action) {
             }
         }
         case 'SIGN_UP': {
+            console.log('SIGN_UP')
             NProgress.done()
             return {
                 ...state,
@@ -24,6 +26,7 @@ function userReducer(state, action) {
             }
         }
         case 'SIGN_OUT': {
+            console.log('SIGN_OUT')
             NProgress.done()
             return {
                 ...state,
@@ -34,6 +37,7 @@ function userReducer(state, action) {
             }
         }
         case 'VERIFY_LOGIN': {
+            console.log('VERIFY_LOGIN')
             NProgress.done()
             return {
                 ...state,
@@ -44,6 +48,7 @@ function userReducer(state, action) {
             }
         }
         case 'GET_TOKEN': {
+            console.log('GET_TOKEN')
             NProgress.done()
             return {
                 ...state,
@@ -53,6 +58,7 @@ function userReducer(state, action) {
             }
         }
         case 'FETCH_CHANNEL': {
+            console.log('FETCH_CHANNEL')
             NProgress.done()
             return {
                 ...state,
@@ -62,6 +68,7 @@ function userReducer(state, action) {
             }
         }
         case 'FETCH_HEADERS': {
+            console.log('FETCH_HEADERS')
             NProgress.done()
             return {
                 ...state,
@@ -71,6 +78,7 @@ function userReducer(state, action) {
             }
         }
         case 'FETCH_SUBSCRIPTIONS': {
+            console.log('FETCH_SUBSCRIPTIONS')
             NProgress.done()
             return {
                 ...state,
@@ -80,6 +88,7 @@ function userReducer(state, action) {
             }
         }
         case 'LOADING': {
+            console.log('LOADING')
             NProgress.start()
             return {
                 ...state,
@@ -90,9 +99,11 @@ function userReducer(state, action) {
             }
         }
         case 'ERROR': {
+            console.log('ERROR')
             NProgress.done()
             toast.error('Error! Please try again', {
-                position: "top-right",
+                toastId: 'ErrorNotification',
+                position: "bottom-right",
                 autoClose: 5000,
                 hideProgressBar: false,
                 closeOnClick: true,
