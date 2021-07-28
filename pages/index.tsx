@@ -28,17 +28,19 @@ const Blog: React.FC = () => {
     const router = useRouter()
     const [tagFilter, setTagFilter] = useState<string[]>([])
     const [uri, setUri] = useState<string>()
+    const [shouldFetch, setShouldFetch] = useState<boolean>(false)
     const [pageIndex, setPageIndex] = useState(parseInt(router.query.page as string) || 1);
     const baseUri = `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/`
-    const {data, error} = useSWR<Data>(() => uri + '&page=' + pageIndex, fetcher)
+    const {data, error} = useSWR<Data>(shouldFetch ? uri + '&page=' + pageIndex : null, fetcher)
     const {userState} = useContext<Props>(UserContext)
 
     useEffect(() => {
         let tags = tagFilter.length > 0 ? `&tags=${encodeURIComponent(tagFilter.join(","))}` : ''
         let channel = `channel=${userState.channel || null}`
-        let endpoint = tagFilter.length > 0 ? 'tags_blog?':'blog?'
+        let endpoint = tagFilter.length > 0 ? 'tags_blog?' : 'blog?'
         setUri(baseUri + endpoint + channel + tags)
-    }, [userState.channel, tagFilter, baseUri])
+        !shouldFetch && setShouldFetch(true)
+    }, [userState.channel, tagFilter, baseUri, shouldFetch])
 
     useEffect(() => {
         router.query.tags === undefined && setTagFilter([])
