@@ -27,9 +27,10 @@ interface Episodes {
 const Blog: React.FC = () => {
     const router = useRouter()
     const [tagFilter, setTagFilter] = useState<string[]>([])
-    const [uri, setUri] = useState<string>('')
+    const [uri, setUri] = useState<string>()
+    const [pageIndex, setPageIndex] = useState(parseInt(router.query.page as string) || 1);
     const baseUri = `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/`
-    const {data, error} = useSWR<Data>(uri, fetcher)
+    const {data, error} = useSWR<Data>(() => uri + '&page=' + pageIndex, fetcher)
     const {userState} = useContext<Props>(UserContext)
 
     useEffect(() => {
@@ -48,10 +49,6 @@ const Blog: React.FC = () => {
     }
     const handleRemoveTag = (tag: string) => {
         return setTagFilter(tagFilter.filter(i => i !== tag))
-    }
-    const currentPage = parseInt(router.query.page as string)
-    const handlePageClick = (data) => {
-        router.push(`/?page=${data.selected + 1}`).then()
     }
 
     if (error) return <div>failed to load</div>
@@ -87,7 +84,7 @@ const Blog: React.FC = () => {
                     pageCount={data.pages + 1}
                     marginPagesDisplayed={1}
                     pageRangeDisplayed={2}
-                    onPageChange={handlePageClick}
+                    onPageChange={(i) => setPageIndex(i.selected + 1)}
                     containerClassName={'flex mx-auto mt-10 justify-center'}
                     activePageClassName={'text-red-900'}
                     nextLabel='navigate_next'
@@ -98,7 +95,7 @@ const Blog: React.FC = () => {
                     pageClassName={'dark:text-white cursor-pointer select-none text-lg sm:px-3 mx-2 hover:text-red-500'}
                     breakLinkClassName={'dark:text-white text-lg sm:px-3 mx-2 hover:text-red-500'}
                     disabledClassName={'material-icons-outlined'}
-                    forcePage={currentPage - 1 || 0}
+                    forcePage={pageIndex - 1 || 0}
                 />
             </div>}
         </>
