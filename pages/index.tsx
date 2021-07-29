@@ -31,23 +31,13 @@ const Blog: React.FC = () => {
     const [shouldFetch, setShouldFetch] = useState<boolean>(false)
     const [pageIndex, setPageIndex] = useState(parseInt(router.query.page as string) || 1);
     const baseUri = `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/`
+    const {userState} = useContext<Props>(UserContext)
     const {data, error} = useSWR<Data>(shouldFetch ? uri + '&page=' + pageIndex : null, fetcher, {
-        onErrorRetry: (error, key, config, revalidate, {retryCount}) => {
-            // Never retry on 404.
-            // if (error.status === 404) return
-            // if (error.status === 403) return
-            // console.log(error.status)
-            console.log(error, error.message)
+        onErrorRetry: (error) => {
             if (error.message.includes('not authorized')) return
-            // Only retry up to 10 times.
-            // if (retryCount >= 3) return
-            // Retry after 5 seconds.
-            // setTimeout(() => revalidate({retryCount}), 5000)
-            // router.push('/user/login')
         }
     })
-    const {userState} = useContext<Props>(UserContext)
-// console.log(error)
+
     useEffect(() => {
         let tags = tagFilter.length > 0 ? `&tags=${encodeURIComponent(tagFilter.join(","))}` : ''
         let channel = `channel=${userState.channel || null}`
@@ -77,10 +67,8 @@ const Blog: React.FC = () => {
                 to {userState.isLogged ? 'subscribe' : 'sign in'}</button>
         </>
     )
-    if (error) return <div>failed to load</div>
-    // eslint-disable-next-line @next/next/no-img-element
-    if (!data) return <img className='mx-auto my-auto object-center justify-items-center align-middle'
-                           src='../loading.svg' alt='loading'/>
+    if (error) return <div className='text-2xl text-semibold mx-auto mt-10'>There was an error loading the episodes.</div>
+    if (!data) return <div className="cover-spin" id='cover-spin'/>
 
     return (
         <>

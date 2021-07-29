@@ -56,7 +56,7 @@ const PostCard: React.FC<{ data: Post }> = ({data}) => {
                         {data.description.length > 500 ? data.description.substring(0, 500) + '...' : data.description}
                     </p>
                     <div className="flex gap-2 mt-auto whitespace-pre-wrap flex-wrap">
-                        {data.tags.length > 0 && data.tags.map(t => t.name).map((value, index) =>
+                        {data.tags.length > 0 && data.tags.sort().map(t => t.name).map((value, index) =>
                             <button key={index}
                                     className={data.currentFilter?.includes(value) ? "btn btn-primary btn-xs px-2" : "btn btn-secondary btn-xs px-2"}
                                     onClick={() => handleFilter(value)}

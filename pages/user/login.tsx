@@ -2,6 +2,7 @@ import React, {useContext, useState} from "react";
 import JtockAuth from "j-tockauth";
 import {useRouter} from "next/router";
 import {Props, UserContext} from "../../components/userContext/user-context";
+import {ErrorNotification, SuccessNotification} from "../../components/notification";
 
 const Login: React.FC = () => {
     const router = useRouter()
@@ -23,19 +24,20 @@ const Login: React.FC = () => {
         const auth = new JtockAuth({
             host: process.env.NEXT_PUBLIC_API_URL,
             prefixUrl: `${userState.channel}/subscribers`,
-            debug: true
+            debug: false
         });
         userDispatch({type: 'LOADING'})
         auth
             .signIn(formData.email, formData.password)
             .then(userData => {
                 userDispatch({type: 'SIGN_IN', user: userData.data})
+                SuccessNotification(userDispatch, 'Signed in successfully', 'sign_up')
                 router.push('/')
             })
             .catch(error => {
                 userDispatch({type: 'ERROR'})
+                ErrorNotification(userDispatch, 'There was an error while signing in.', 'sign_up')
                 setLoginError('Please verify your credentials and try again.')
-                // console.log(error);
             });
     }
 

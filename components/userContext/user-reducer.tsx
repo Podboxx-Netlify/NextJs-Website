@@ -92,10 +92,15 @@ function userReducer(state, action) {
             NProgress.start()
             return {
                 ...state,
-                isLogged: false,
-                isLoading: true,
-                user: {},
-                error: false
+                isLoading: true
+            }
+        }
+        case 'STOP_LOADING': {
+            console.log('STOP_LOADING')
+            NProgress.done()
+            return {
+                ...state,
+                isLoading: false
             }
         }
         case 'ERROR': {

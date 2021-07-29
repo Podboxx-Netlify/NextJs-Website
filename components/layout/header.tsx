@@ -30,16 +30,12 @@ export default function Header({...props}) {
     }, [userState.channel])
 
     useEffect(() => {
-        // if (typeof window !== undefined) {
-        //     setCurrentChannel(localStorage.channel)
-        // }
         setCurrentChannel(userState.channel)
     }, [])
 
     const handleChannelChange = (id: string, premium?: boolean) => {
         localStorage.setItem('channel', id);
         userDispatch({type: 'FETCH_CHANNEL', channel: id.toString()});
-        // if (premium === true) {}
         localStorage.getItem('J-tockAuth-Storage') !== null && signOut(userState.channel, userDispatch)
         router.replace({
             pathname: '/',

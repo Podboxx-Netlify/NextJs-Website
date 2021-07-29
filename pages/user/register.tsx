@@ -3,10 +3,7 @@ import JtockAuth from "j-tockauth";
 import {Props, UserContext} from "../../components/userContext/user-context";
 import validator from 'validator';
 import {useRouter} from "next/router";
-
-interface Errors {
-    email?: string[]
-}
+import {ErrorNotification, SuccessNotification} from "../../components/notification";
 
 const Register: React.FC = () => {
     const router = useRouter()
@@ -31,13 +28,11 @@ const Register: React.FC = () => {
         !validator.isAlpha(formData.last_name) && errors.push('Last name cannot have numbers.')
         validator.isEmpty(formData.first_name) && errors.push('First name cannot be empty.')
         validator.isEmpty(formData.last_name) && errors.push('Last name cannot be empty.')
-        console.log(validator.isEmail(formData.email))
         setError(errors)
         return errors.length > 0;
     }
 
     const handleChange = (e) => {
-        console.log(e.target.value)
         setFormData(data => ({...data, [e.target.id]: e.target.value}))
     }
 
@@ -69,13 +64,11 @@ const Register: React.FC = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (verifyData()) {
-            return
-        }
+        if (verifyData()) return
         const auth = new JtockAuth({
             host: process.env.NEXT_PUBLIC_API_URL,
             prefixUrl: `${userState.channel}/subscribers`,
-            debug: true
+            debug: false
         });
         userDispatch({type: 'LOADING'})
         auth
@@ -89,13 +82,14 @@ const Register: React.FC = () => {
                 },
                 "http://localhost:5000/user/login"
             )
-            .then(userData => {
-                console.log(userData);
+            .then(() => {
                 userDispatch({type: 'SIGN_UP'})
+                SuccessNotification(userDispatch, 'Account successfully created', 'sign_up')
                 router.push('/user/login')
             })
             .catch(e => {
                 userDispatch({type: 'ERROR'})
+                ErrorNotification(userDispatch, 'There was an error when creating your account.', 'sign_up')
                 error.push('There was an error when creating your account.')
             });
     }

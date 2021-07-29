@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import {useRouter} from "next/router";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCalendarAlt, faClock} from "@fortawesome/free-regular-svg-icons";
@@ -6,6 +6,7 @@ import useSWR from "swr";
 import fetcher from "../../libs/fetcher"
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import {Props, UserContext} from "../../components/userContext/user-context";
 
 interface Data {
     title: string
@@ -20,13 +21,22 @@ const Post: React.FC = () => {
     dayjs.extend(utc)
     const router = useRouter()
     const baseUri = `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/`
-    const {data, error} = useSWR<Data>(baseUri + /podcast/ + router.query.id, fetcher)
-
+    const {data, error} = useSWR<Data>(baseUri + 'podcast/' + router.query.id, fetcher)
+    const {userState} = useContext<Props>(UserContext)
+    if (error && error.message.includes('not authorized')) return (
+        <>
+            <div className='text-2xl text-semibold mx-auto mt-10'>You are not authorized to view the episodes of this
+                podcast.
+            </div>
+            <button className='btn btn-primary mt-4'
+                    onClick={() => router.push(userState.isLogged ? '/user/dashboard' : '/user/login')}>Click here
+                to {userState.isLogged ? 'subscribe' : 'sign in'}</button>
+        </>
+    )
 
     if (error) return <div>failed to load</div>
     // eslint-disable-next-line @next/next/no-img-element
-    if (!data) return <img className='mx-auto my-auto object-center justify-items-center align-middle'
-                           src='../loading.svg' alt='loading'/>
+    if (!data) return <div className="cover-spin" id='cover-spin'/>
 
     return (
         <div
@@ -38,7 +48,6 @@ const Post: React.FC = () => {
                     router.back()
                 }}>Go Back
             </button>
-
             <article className="prose prose-sm lg:prose-lg mx-auto max-w-screen-lg px-5">
                 <h1 className='text-center capitalize col-span-2'>{data.title || 'Error loading the episode'}</h1>
                 <h4 className="text-sm text-center" style={{marginTop: '-20px'}}>
