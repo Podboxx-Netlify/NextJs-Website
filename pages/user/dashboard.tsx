@@ -4,7 +4,9 @@ import Axios from "axios";
 import {Props, UserContext} from "../../components/userContext/user-context";
 import {useRouter} from "next/router";
 import {toast} from "react-toastify";
-
+import useSWR from "swr";
+import fetcher from "../../libs/fetcher";
+import Spinner from "../../components/layout/spinner"
 interface CustomerInfo {
     payment_methods: {
         expiration_month: string
@@ -23,32 +25,75 @@ interface CustomerInfo {
     subscriptions: string[]
 }
 
+interface UserProfile {
+    id: number
+    email: string
+    first_name: string
+    last_name: string
+    subscription: {
+        id: number
+        ends_at: string
+        next_billing_date: string
+        next_billing_address: number
+        status: string
+        payment_method: {
+            expiration_month: string
+            expiration_year: string
+            image_url: string
+            number: string
+            payment_type: string
+            token: string
+        }
+        subscription_plan: {
+            name: string
+        }
+    }
+}
+
 const Dashboard: React.FC = () => {
     const router = useRouter();
-    const [error, setError] = useState<string[]>()
     const {userState, userDispatch} = useContext<Props>(UserContext)
-    const [customerInfo, setCustomerInfo] = useState<CustomerInfo>()
+    // const [customerInfo, setCustomerInfo] = useState<CustomerInfo>()
     const [channelPlans, setChannelPlans] = useState([])
+    const {
+        data,
+        error
+    } = useSWR<UserProfile>(userState.isLogged ? `${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile` : null, fetcher, {
+        onErrorRetry: (error, key, config, revalidate, {retryCount}) => {
+            console.log(error, error.message)
+            if (error.message.includes('not authorized')) return
+        }
+    })
+    console.log(data)
 
     useEffect(() => {
         if (userState.isLogged) {
-            listChannelPlans().then(() => getToken().then(res => instance(res.token, res._customerInfo)));
+            listChannelPlans().then(() => getToken().then(res => instance(res.token, data)));
         }
     }, [userState.isLogged])
 
     const getToken = async () => {
-        const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
+        // const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
         const response = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/client_token`)
-        const payment_res = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
-            {
-                params: {
-                    uid: headers['uid'],
-                    client: headers['client'],
-                    "access-token": headers["access-token"]
-                }
-            })
-        setCustomerInfo(payment_res.data)
-        return response && {token: response.data.client_token, _customerInfo: payment_res.data}
+        // const payment_res = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
+        //     {
+        //         params: {
+        //             uid: headers['uid'],
+        //             client: headers['client'],
+        //             "access-token": headers["access-token"]
+        //         }
+        //     })
+        // const profile = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`,
+        //     {
+        //         params: {
+        //             uid: headers['uid'],
+        //             client: headers['client'],
+        //             "access-token": headers["access-token"]
+        //         }
+        //     })
+        // console.log(profile.data)
+        // setCustomerInfo(payment_res.data)
+        return response && {token: response.data.client_token}
     }
 
     const destroyPaymentMethod = async (token: string) => {
@@ -64,11 +109,11 @@ const Dashboard: React.FC = () => {
             .catch(() => userDispatch({type: 'ERROR'}))
     }
 
-    const handleSubmit = async (nonce: string, _customerInfo: CustomerInfo) => {
+    const handleSubmit = async (nonce: string, data: UserProfile) => {
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
         if (userState.user['id'] !== null) {
-            if (_customerInfo.payment_methods.length > 0) {
-                await Axios.put(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/${_customerInfo.payment_methods[0].token}`,
+            if (data?.subscription?.payment_method) {
+                await Axios.put(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/${data.subscription.payment_method.token}`,
                     {
                         nonce_from_the_client: nonce,
                         uid: headers['uid'],
@@ -106,10 +151,11 @@ const Dashboard: React.FC = () => {
 
     const handleCreatePlan = async (selected_plan: number) => {
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
+        {data.subscription.status.includes('Active') && await handleCancelPlan()}
         await Axios.post(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/create_subscription`,
             {
                 subscriber_id: userState.user['id'],
-                payment_token: customerInfo.payment_methods[0].token,
+                payment_token: data.subscription.payment_method.token,
                 selected_plan: selected_plan,
                 uid: headers['uid'],
                 client: headers['client'],
@@ -117,28 +163,20 @@ const Dashboard: React.FC = () => {
             }).then(r => router.reload())
     }
 
-    const handleCancelPlan = async (subscription_id) => {
+    const handleCancelPlan = async () => {
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
-        const profile = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`,
-            {
-                params: {
-                    uid: headers['uid'],
-                    client: headers['client'],
-                    "access-token": headers["access-token"]
-                }
-            })
-        console.log(profile.data)
+        console.log(data)
         await Axios.post(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/cancel_subscription`,
             {
                 subscriber_id: userState.user['id'],
-                subscription_id: profile.data.subscription.id,
+                subscription_id: data.subscription.id,
                 uid: headers['uid'],
                 client: headers['client'],
                 "access-token": headers["access-token"]
             }).then(r => router.reload())
     }
 
-    const instance = (token: string, _customerInfo: CustomerInfo) => {
+    const instance = (token: string, data: UserProfile) => {
         client.create({
             authorization: token
         }, (err, clientInstance) => {
@@ -146,11 +184,11 @@ const Dashboard: React.FC = () => {
                 console.error(err);
                 return;
             }
-            createHostedFields(clientInstance, _customerInfo);
+            createHostedFields(clientInstance, data);
         });
     }
 
-    const createHostedFields = (clientInstance, _customerInfo) => {
+    const createHostedFields = (clientInstance, data) => {
         hostedFields.create({
             client: clientInstance,
             styles: {
@@ -191,10 +229,10 @@ const Dashboard: React.FC = () => {
                 hostedFieldsInstance?.tokenize(function (err, payload) {
                     if (err) {
                         err.details?.invalidFieldKeys?.length >= 1 && err.details.invalidFieldKeys.forEach(key => hostedFieldsInstance.clear(key))
-                        setError(err.details?.invalidFieldKeys)
+                        // setError(err.details?.invalidFieldKeys)
                         return;
                     }
-                    handleSubmit(payload.nonce, _customerInfo).then(r => console.log(r))
+                    handleSubmit(payload.nonce, data).then(r => console.log(r))
                     hostedFieldsInstance.clear('number');
                     hostedFieldsInstance.clear('cvv');
                     hostedFieldsInstance.clear('expirationDate');
@@ -204,109 +242,106 @@ const Dashboard: React.FC = () => {
         });
     }
 
+    if (!userState.isLogged || !data) return <Spinner/>
     return (
         <div className="w-full grid place-items-center mt-10">
-            {userState.isLogged ?
-                <div className="p-2 card bg-08dp shadow-md">
-                    <div className="form-control card-body">
-                        <div className="text-center text-3xl font-bold card-title">Your Account</div>
-                        <div className="grid grid-cols-2 mx-10">
-                            <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content">
-                                <div className="card-body">
-                                    <p className="text-xl">Payment Method</p>
-                                    {customerInfo?.payment_methods[0] !== undefined &&
-                                    <div className='rounded-box border border-primary p-4 whitespace-nowrap mr-5 my-2'>
-                                        <div className='whitespace-nowrap text-lg'>
-                                            {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods[0].expiration_month + '/' + customerInfo.payment_methods[0].expiration_year + ' '}
-                                            {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods[0].number}
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img className='float-left mr-2'
-                                                 src={customerInfo?.payment_methods[0] !== undefined ? customerInfo.payment_methods[0]['image_url'] : ''}
-                                                 alt={customerInfo?.payment_methods[0] !== undefined ? customerInfo.payment_methods[0]['payment_type'] : ''}/>
-                                            <button
-                                                className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap float-right"
-                                                onClick={() => destroyPaymentMethod(customerInfo.payment_methods[0].token)}>Delete
-                                            </button>
-                                        </div>
-                                    </div>
-                                    }
-                                    <div className="collapse w-96 rounded-box border border-base-300 collapse-arrow">
-                                        <input type="checkbox"/>
-                                        <div className="collapse-title text-xl font-medium">
-                                            {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods.length > 0 ? "Edit Payment Method" : "Add a Payment Method"}
-                                        </div>
-                                        <div className="collapse-content">
-                                            <form id="cardForm">
-                                                <label htmlFor="card-number"
-                                                       className={error?.includes('number') ? 'text-error' : ''}>
-                                                    Card Number</label>
-                                                <div id="card-number" className="hosted-field mt-3"/>
-                                                <label htmlFor="expiration-date"
-                                                       className={error?.includes('expirationDate') ? 'text-error' : ''}>
-                                                    Expiration Date</label>
-                                                <div id="expiration-date" className="hosted-field mt-3"/>
-                                                <label htmlFor="expiration-date"
-                                                       className={error?.includes('cvv') ? 'text-error' : ''}>CVV</label>
-                                                <div id="cvv" className="hosted-field mt-3"/>
-                                                <div className='text-center mt-3'>
-                                                    <button
-                                                        className={userState.isLoading ? "btn btn-primary loading" : "btn btn-primary"}
-                                                        type='submit'>
-                                                        {customerInfo?.payment_methods[0] !== undefined && customerInfo.payment_methods.length > 0 ? 'Update' : 'Create'}
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
+            <div className="p-2 card bg-08dp shadow-md">
+                <div className="form-control card-body">
+                    <div className="text-center text-3xl font-bold card-title">Your Account</div>
+                    <div className="grid grid-cols-2 mx-10">
+                        <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content">
+                            <div className="card-body">
+                                <p className="text-xl">Payment Method</p>
+                                {data?.subscription?.payment_method !== undefined &&
+                                <div className='rounded-box border border-primary p-4 whitespace-nowrap mr-5 my-2'>
+                                    <div className='whitespace-nowrap text-lg'>
+                                        {data.subscription.payment_method.expiration_month + '/' + data.subscription.payment_method.expiration_year + ' '}
+                                        {data.subscription.payment_method.number}
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img className='float-left mr-2'
+                                             src={data.subscription.payment_method['image_url']}
+                                             alt={data.subscription.payment_method['payment_type']}/>
+                                        <button
+                                            className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap float-right"
+                                            onClick={() => destroyPaymentMethod(data.subscription.payment_method.token)}>Delete
+                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content ml-5">
-                                <div className="card-body">
-                                    <p className="text-xl">Plans</p>
-                                    {Object.keys(channelPlans).length > 0 &&
-                                    <>
-                                        {Object.keys(channelPlans).map((value, index) =>
-                                            <div key={index}
-                                                 className={customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ? "w-96 rounded-box border border-success my-2 bg-24dp" : "w-96 rounded-box border border-primary my-2 bg-24dp"}>
-                                                {/*<input type="checkbox"/>*/}
-                                                <div className="collapse-title text-xl font-medium capitalize">
-                                                    {value} <span
-                                                    className={customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ? "badge badge-success ml-5":"badge badge-primary ml-5"}>
-                                                    {'$' + channelPlans[value]['price']} {channelPlans[value]['billing_cycle'] <= 11 ? 'per month' : 'per year'}
-                                                    </span>
-                                                </div>
-                                                <div className="m-3">
-                                                    <p>
-                                                        {/*{channelPlans[value]['desc']}*/}
-                                                        {customerInfo?.customer.map((v, i) =>
-                                                            channelPlans[value]['braintree_id'] === v.plan_id &&
-                                                                <span key={i} className="text-success">{v['status']}</span>
-                                                        )}
-                                                    </p>
-                                                    <div className="text-right">
-                                                        {/*{customerInfo?.subscriptions.indexOf(channelPlans[value]['braintree_id']) !== -1 ?*/}
-                                                            <button
-                                                                className="btn btn-success btn-block btn-sm rounded-btn whitespace-nowrap"
-                                                                onClick={() => handleCancelPlan(0)}>Cancel subscription
-                                                            </button>
-                                                        {/*:*/}
-                                                            <button
-                                                                className="btn btn-primary btn-outline rounded-btn btn-sm whitespace-nowrap justify-center"
-                                                                onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>Subscribe
-                                                            </button>
-                                                        {/*}*/}
-                                                    </div>
-                                                </div>
+                                }
+                                <div className="collapse w-96 rounded-box border border-base-300 collapse-arrow">
+                                    <input type="checkbox"/>
+                                    <div className="collapse-title text-xl font-medium">
+                                        {data.subscription.payment_method !== undefined && data.subscription.payment_method ? "Edit Payment Method" : "Add a Payment Method"}
+                                    </div>
+                                    <div className="collapse-content">
+                                        <form id="cardForm">
+                                            <label htmlFor="card-number"
+                                                   className={error?.includes('number') ? 'text-error' : ''}>
+                                                Card Number</label>
+                                            <div id="card-number" className="hosted-field mt-3"/>
+                                            <label htmlFor="expiration-date"
+                                                   className={error?.includes('expirationDate') ? 'text-error' : ''}>
+                                                Expiration Date</label>
+                                            <div id="expiration-date" className="hosted-field mt-3"/>
+                                            <label htmlFor="expiration-date"
+                                                   className={error?.includes('cvv') ? 'text-error' : ''}>CVV</label>
+                                            <div id="cvv" className="hosted-field mt-3"/>
+                                            <div className='text-center mt-3'>
+                                                <button
+                                                    className={userState.isLoading ? "btn btn-primary loading" : "btn btn-primary"}
+                                                    type='submit'>
+                                                    {data.subscription.payment_method !== undefined && data.subscription.payment_method ? 'Update' : 'Create'}
+                                                </button>
                                             </div>
-                                        )}
-                                    </>
-                                    }
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content ml-5">
+                            <div className="card-body">
+                                <p className="text-xl">Plans</p>
+                                {Object.keys(channelPlans).length > 0 &&
+                                <>
+                                    {Object.keys(channelPlans).map((value, index) =>
+                                        <div key={index}
+                                             className={data.subscription.subscription_plan.name.indexOf(value) !== -1 ? "w-96 rounded-box border border-success my-2 bg-24dp" : "w-96 rounded-box border border-primary my-2 bg-24dp"}>
+                                            {/*<input type="checkbox"/>*/}
+                                            <div className="collapse-title text-xl font-medium capitalize">
+                                                {value} <span
+                                                className={data.subscription.subscription_plan.name.indexOf(value) !== -1 ? "badge badge-success ml-5" : "badge badge-primary ml-5"}>
+                                                    {'$' + channelPlans[value]['price']} {channelPlans[value]['billing_cycle'] <= 11 ? 'per month' : 'per year'}
+                                                    </span>
+                                            </div>
+                                            <div className="m-3">
+                                                <p>
+                                                    {data.subscription.subscription_plan.name.indexOf(value) !== -1 &&
+                                                    <span
+                                                        className={data.subscription.status.includes('Active') ? 'text-success' : ''}>{data.subscription.status}</span>}
+                                                </p>
+                                                <div className="text-right">
+                                                    {data.subscription && data.subscription.subscription_plan.name.indexOf(value) !== -1 && data.subscription.status.includes('Active') ?
+                                                        <button
+                                                            className="btn btn-primary btn-outline rounded-btn btn-sm whitespace-nowrap justify-center"
+                                                            onClick={handleCancelPlan}>Cancel subscription
+                                                        </button>
+                                                        :
+                                                        <button
+                                                            className="btn btn-primary btn-outline rounded-btn btn-sm whitespace-nowrap justify-center"
+                                                            onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>Subscribe
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                                }
+                            </div>
+                        </div>
                     </div>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                </div> : <div className='text-2xl text-center my-auto'>Loading</div>}
+                </div>
+            </div>
         </div>
     )
 }

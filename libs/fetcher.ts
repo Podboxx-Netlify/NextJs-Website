@@ -14,9 +14,9 @@ export default async function fetcher<JSON = any>(
 
     const res = await fetch(input, {
         headers: {
-            uid: headers['uid'] || null,
-            client: headers['client'] || null,
-            "access-token": headers["access-token"] || null,
+            uid: headers !== null && headers['uid'] || null,
+            client: headers !== null && headers['client'] || null,
+            "access-token": headers !== null && headers["access-token"] || null,
             channel: JSON.parse(localStorage.getItem('channel')) || null
         }
     })
