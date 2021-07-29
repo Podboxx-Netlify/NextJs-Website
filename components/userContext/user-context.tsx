@@ -1,6 +1,8 @@
 import React, {useEffect, useReducer} from 'react';
 import UserReducer from "./user-reducer";
 import JtockAuth from "j-tockauth";
+import useSWR from "swr";
+import fetcher from "../../libs/fetcher"
 
 export interface Props {
     userState?: { isLoading: boolean; isLogged: boolean; user: {}; error: boolean; channel: number | string; subscriptions: string[] }

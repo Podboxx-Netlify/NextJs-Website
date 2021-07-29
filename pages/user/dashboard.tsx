@@ -128,14 +128,14 @@ const Dashboard: React.FC = () => {
                 }
             })
         console.log(profile.data)
-        // await Axios.post(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/cancel_subscription`,
-        //     {
-        //         subscriber_id: userState.user['id'],
-        //         subscription_id: profile.data.subscription.id,
-        //         uid: headers['uid'],
-        //         client: headers['client'],
-        //         "access-token": headers["access-token"]
-        //     }).then(r => router.reload())
+        await Axios.post(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/cancel_subscription`,
+            {
+                subscriber_id: userState.user['id'],
+                subscription_id: profile.data.subscription.id,
+                uid: headers['uid'],
+                client: headers['client'],
+                "access-token": headers["access-token"]
+            }).then(r => router.reload())
     }
 
     const instance = (token: string, _customerInfo: CustomerInfo) => {
