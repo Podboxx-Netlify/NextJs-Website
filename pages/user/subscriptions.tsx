@@ -4,7 +4,6 @@ import Axios from "axios";
 import {Props, UserContext} from "../../components/userContext/user-context";
 import useSWR, {mutate} from "swr";
 import fetcher from "../../libs/fetcher";
-import Spinner from "../../components/layout/spinner"
 import {ErrorNotification, SuccessNotification} from "../../components/notification";
 
 interface UserProfile {
@@ -32,7 +31,7 @@ interface UserProfile {
     }
 }
 
-const Dashboard: React.FC = () => {
+const Subscriptions: React.FC = () => {
     const {userState, userDispatch} = useContext<Props>(UserContext)
     const [formError, setFormError] = useState([])
     const [channelPlans, setChannelPlans] = useState([])
@@ -203,7 +202,7 @@ const Dashboard: React.FC = () => {
         <div className="w-full grid place-items-center mt-10">
             <div className="p-2 card bg-08dp shadow-md">
                 <div className="form-control card-body">
-                    <div className="text-center text-3xl font-bold card-title">Your Account</div>
+                    <div className="text-center text-3xl font-bold card-title">Subscriptions</div>
                     <div className="grid grid-cols-2 mx-10">
                         <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content">
                             <div className="card-body">
@@ -304,4 +303,4 @@ const Dashboard: React.FC = () => {
         </div>
     )
 }
-export default Dashboard
+export default Subscriptions

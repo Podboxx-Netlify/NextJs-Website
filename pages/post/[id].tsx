@@ -29,7 +29,7 @@ const Post: React.FC = () => {
                 podcast.
             </div>
             <button className='btn btn-primary mt-4'
-                    onClick={() => router.push(userState.isLogged ? '/user/dashboard' : '/user/login')}>Click here
+                    onClick={() => router.push(userState.isLogged ? '/user/subscriptions' : '/user/login')}>Click here
                 to {userState.isLogged ? 'subscribe' : 'sign in'}</button>
         </>
     )

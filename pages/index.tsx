@@ -37,7 +37,7 @@ const Blog: React.FC = () => {
             if (error.message.includes('not authorized')) return
         }
     })
-
+    
     useEffect(() => {
         let tags = tagFilter.length > 0 ? `&tags=${encodeURIComponent(tagFilter.join(","))}` : ''
         let channel = `channel=${userState.channel || null}`

@@ -1,23 +1,53 @@
 import Header from './header'
 import Footer from './footer'
-import React from "react";
+import React, {useContext} from "react";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
-import {useContext} from "react";
 import {Props, UserContext} from "../userContext/user-context";
+import useSWR from "swr";
+import fetcher from "../../libs/fetcher";
+
+interface WebsiteData {
+    title: string
+    description: string
+    my_podboxx: {
+        id: number
+        title: string
+        fb_url: string
+        apple_url: string
+        google_url: string
+        header_url: string
+        spotify_url: string
+        twitter_url: string
+        youtube_url: string
+        linkedin_url: string
+    }
+    channels: Channel[]
+}
+
+interface Channel {
+    id: number
+    title: string
+    subscription_required: boolean
+}
+
+export type {WebsiteData}
 
 export default function Layout({...props}) {
     const {userState} = useContext<Props>(UserContext)
+    const {data} = useSWR<WebsiteData>(`${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/website`, fetcher)
 
+    if (!data) return <div className="cover-spin" id='cover-spin'/>
     return (
         <div className="flex flex-col min-h-screen bg-03dp">
-            <ToastContainer />
-            {userState.isLoading && <div className="cover-spin" id='cover-spin'/>}
-            <Header data={props.website}/>
+            <ToastContainer/>
+            <title>{data?.title || 'Error'}</title>
+            <Header data={data}/>
             <div className='container mx-auto flex-grow'>
                 {props.children}
             </div>
-            <Footer data={props.website}/>
+            <Footer data={data}/>
+            {userState.isLoading && <div className="cover-spin" id='cover-spin'/>}
         </div>
     );
 }

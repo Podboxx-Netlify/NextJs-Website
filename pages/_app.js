@@ -9,30 +9,20 @@ Router.events.on('routeChangeStart', () => NProgress.start())
 Router.events.on('routeChangeComplete', () => NProgress.done())
 Router.events.on('routeChangeError', () => NProgress.done())
 
-function MyApp({Component, pageProps, websiteData}) {
+function MyApp({Component, pageProps}) {
     return (
         <UserProvider>
-            <Layout website={websiteData}>
-                <title>{websiteData && websiteData.title || 'Error'}</title>
-                <Component {...pageProps} website={websiteData}/>
+            <Layout>
+                <Component {...pageProps}/>
             </Layout>
         </UserProvider>
     )
 }
 
 MyApp.getInitialProps = async (Component, ctx) => {
-    const websiteRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/website`)
-    let websiteData;
     let pageProps = {};
-    if (Component.getInitialProps) {
-        pageProps = await Component.getInitialProps(ctx);
-    }
-    if (websiteRes.status !== 200) {
-        websiteData = {}
-    } else {
-        websiteData = await websiteRes.json()
-    }
-    return {pageProps, websiteData};
+    if (Component.getInitialProps) pageProps = await Component.getInitialProps(ctx);
+    return pageProps
 }
 
 export default MyApp
