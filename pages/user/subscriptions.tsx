@@ -33,6 +33,8 @@ interface UserProfile {
     }
 }
 
+export type {UserProfile}
+
 const Subscriptions: React.FC = () => {
     const router = useRouter()
     const [isReady, cancel, reset] = useTimeoutFn(() => router.push('/user/login'), 5000);
