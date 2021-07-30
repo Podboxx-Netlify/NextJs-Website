@@ -57,55 +57,69 @@ export default function Header({...props}) {
                         <a className="btn btn-ghost btn-sm rounded-btn" onClick={() => router.replace('/')}>
                             Home
                         </a>
-                        {isLogged ?
-                            <div className="dropdown dropdown-end invisible md:visible">
-                                <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
-                                    <FontAwesomeIcon icon={faUserCircle} className='mr-2' size='lg'/>My Account
-                                </div>
-                                <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-52">
-                                    <li>
-                                        <a>
-                                            <button className="focus:outline-none w-full font-medium whitespace-nowrap"
+                        {props.data.channels.some(subscription_required) &&
+                        <>
+                            {isLogged ?
+                                <div className="dropdown dropdown-end invisible md:visible">
+                                    <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
+                                        <FontAwesomeIcon icon={faUserCircle} className='mr-2' size='lg'/>My Account
+                                    </div>
+                                    <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-52">
+                                        <li>
+                                            <a>
+                                                <button
+                                                    className="focus:outline-none w-full font-medium whitespace-nowrap"
+                                                    onClick={() => router.push('/user/dashboard')}>
+                                                    Dashboard
+                                                </button>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a>
+                                                <button
+                                                    className="focus:outline-none w-full font-medium whitespace-nowrap"
                                                     onClick={() => router.push('/user/subscriptions')}>
-                                                Subscriptions
-                                            </button>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a>
-                                            <button className="focus:outline-none w-full font-medium whitespace-nowrap"
+                                                    Subscriptions
+                                                </button>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a>
+                                                <button
+                                                    className="focus:outline-none w-full font-medium whitespace-nowrap"
                                                     onClick={() => signOut(userState.channel, userDispatch)}>
-                                                Sign Out
-                                            </button>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            :
-                            <div className="invisible md:visible">
-                                <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                        onClick={() => router.push('/user/login')}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
-                                         width="24px"
-                                         fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                         strokeWidth="2">
-                                        <path
-                                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                    </svg>
-                                    <Link href="/user/login">Sign In</Link>
-                                </button>
-                                <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                        onClick={() => router.push('/user/register')}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
-                                         width="24px"
-                                         fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                         strokeWidth="2">
-                                        <path
-                                            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                    </svg>
-                                    <Link href="/user/register">Register</Link>
-                                </button>
-                            </div>}
+                                                    Sign Out
+                                                </button>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                :
+                                <div className="invisible md:visible">
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => router.push('/user/login')}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                             width="24px"
+                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
+                                             strokeWidth="2">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        <Link href="/user/login">Sign In</Link>
+                                    </button>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => router.push('/user/register')}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+                                             width="24px"
+                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
+                                             strokeWidth="2">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        <Link href="/user/register">Register</Link>
+                                    </button>
+                                </div>}
+                        </>}
                     </div>
                 </div>
                 <div className="navbar-end">
