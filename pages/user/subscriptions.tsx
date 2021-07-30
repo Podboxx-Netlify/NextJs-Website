@@ -5,7 +5,9 @@ import {Props, UserContext} from "../../components/userContext/user-context";
 import useSWR, {mutate} from "swr";
 import fetcher from "../../libs/fetcher";
 import {ErrorNotification, SuccessNotification} from "../../components/notification";
-
+import useTimeoutFn from "../../libs/useTimeoutFn";
+import {useRouter} from "next/router";
+import {useRendersCount} from "../../libs/useRenderCount";
 interface UserProfile {
     id: number
     email: string
@@ -32,8 +34,10 @@ interface UserProfile {
 }
 
 const Subscriptions: React.FC = () => {
-    const {userState, userDispatch} = useContext<Props>(UserContext)
+    const router = useRouter()
+    const [isReady, cancel, reset] = useTimeoutFn(() => router.push('/user/login'), 5000);
     const [formError, setFormError] = useState([])
+    const {userState, userDispatch} = useContext<Props>(UserContext)
     const [channelPlans, setChannelPlans] = useState([])
     const {data} = useSWR<UserProfile>(userState.isLogged ? `${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile` : null, fetcher, {
         onErrorRetry: (error) => {
@@ -42,6 +46,7 @@ const Subscriptions: React.FC = () => {
     })
 
     useEffect(() => {
+        if (userState.isLogged === true) cancel()
         if (userState.isLogged) listChannelPlans().then(() => getToken().then(res => instance(res, data)));
     }, [userState.isLogged])
 

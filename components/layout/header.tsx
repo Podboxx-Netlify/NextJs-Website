@@ -43,6 +43,8 @@ export default function Header({...props}) {
         }, '/').then()
     }
 
+    const subscription_required = (e) => e.subscription_required === true
+
     return (
         <header className="sticky z-10 top-0">
             <div className="navbar shadow-lg bg-16dp text-neutral-content h-24 ">
@@ -184,193 +186,193 @@ export default function Header({...props}) {
                                 }
                             </li>
                         </ul>}
-                        <div className="navbar-end">
-                            {typeof window !== undefined && props.data.channels && Object.keys(props.data.channels).length > 1 &&
-                            <div className="dropdown dropdown-end">
-                                <div tabIndex={0}
-                                     className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">Select Podcast
-                                </div>
-                                <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-64">
-                                    {Object.keys(props.data.channels).map((value, index) =>
-                                        props.data.channels[index]['subscription_required'] ?
-                                            <li key={index}>
-                                                <a>
-                                                    <button
-                                                        className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500" : "focus:outline-none w-full"}
-                                                        onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'], true)}>
+                        {typeof window !== undefined && props.data.channels && Object.keys(props.data.channels).length > 1 &&
+                        props.data.channels.some(subscription_required) &&
+                        <div className="dropdown dropdown-end">
+                            <div tabIndex={0}
+                                 className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">Select Podcast
+                            </div>
+                            <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-64">
+                                {Object.keys(props.data.channels).map((value, index) =>
+                                    props.data.channels[index]['subscription_required'] ?
+                                        <li key={index}>
+                                            <a>
+                                                <button
+                                                    className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500" : "focus:outline-none w-full"}
+                                                    onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'], true)}>
                                                             <span
                                                                 className="line-clamp-1 font-semibold capitalize">
                                                                 <FontAwesomeIcon icon={faGem} size='sm'/> &nbsp;
                                                                 {props.data.channels[index]['title']}</span>
-                                                    </button>
-                                                </a>
-                                            </li> :
-                                            <li key={index}>
-                                                <a>
-                                                    <button
-                                                        className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500" : "focus:outline-none w-full"}
-                                                        onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'])}>
+                                                </button>
+                                            </a>
+                                        </li> :
+                                        <li key={index}>
+                                            <a>
+                                                <button
+                                                    className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500" : "focus:outline-none w-full"}
+                                                    onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'])}>
                                                             <span
                                                                 className="line-clamp-1 capitalize">{props.data.channels[index]['title']}</span>
-                                                    </button>
-                                                </a>
-                                            </li>
-                                    )}
-                                </ul>
-                            </div>
-                            }
-                        </div>
-                    </div>
-                    <div className="flex-none md:invisible">
-                        <div className="dropdown dropdown-end">
-                            <div tabIndex={0} className="btn btn-square btn-ghost">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                     className="inline-block w-6 h-6 stroke-current">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                          d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/>
-                                </svg>
-                            </div>
-                            <ul className="shadow menu dropdown-content bg-24dp rounded-box w-52">
-                                {isLogged ?
-                                    <li>
-                                        <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                                onClick={() => router.push('/user/subscriptions')}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px"
-                                                 viewBox="0 0 24 24"
-                                                 width="24px" fill="#FFFFFF" strokeWidth="2"
-                                                 className="inline-block w-5 mr-2 stroke-current">
-                                                <path
-                                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                            </svg>
-                                            Subscriptions
-                                        </button>
-                                        <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                                onClick={() => signOut(userState.channel, userDispatch)}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px"
-                                                 viewBox="0 0 24 24"
-                                                 width="24px" fill="#FFFFFF" strokeWidth="2"
-                                                 className="inline-block w-5 mr-2 stroke-current">
-                                                <path
-                                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                            </svg>
-                                            Sign Out
-                                        </button>
-                                    </li> :
-                                    <li>
-                                        <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                                onClick={() => router.push('/user/login')}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px"
-                                                 viewBox="0 0 24 24"
-                                                 width="24px"
-                                                 fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                                 strokeWidth="2">
-                                                <path
-                                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                            </svg>
-                                            <Link href="/user/login">Sign In</Link>
-                                        </button>
-                                        <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                                onClick={() => router.push('/user/register')}>
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px"
-                                                 viewBox="0 0 24 24"
-                                                 width="24px"
-                                                 fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                                 strokeWidth="2">
-                                                <path
-                                                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                            </svg>
-                                            <Link href="/user/register">Register</Link>
-                                        </button>
-                                    </li>}
-                                {props.data.my_podboxx?.fb_url !== null &&
-                                <li>
-                                    <a
-                                        href={props.data.my_podboxx?.fb_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-bold hover:text-red-500"
-                                    >
-                                        <p className="text-lg">Facebook</p>
-                                    </a>
-                                </li>
-                                }
-                                {props.data.my_podboxx?.twitter_url !== null &&
-                                <li>
-                                    <a
-                                        href={props.data.my_podboxx?.twitter_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-bold hover:text-red-500"
-                                    >
-                                        <p className="text-lg">Twitter</p>
-                                    </a>
-                                </li>
-                                }
-                                {props.data.my_podboxx?.youtube_url !== null &&
-                                <li>
-                                    <a
-                                        href={props.data.my_podboxx?.youtube_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-bold hover:text-red-500"
-                                    >
-                                        <p className="text-lg">Youtube</p>
-                                    </a>
-                                </li>
-                                }
-                                {props.data.my_podboxx?.google_url !== null &&
-                                <li>
-                                    <a
-                                        href={props.data.my_podboxx?.google_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-bold hover:text-red-500"
-                                    >
-                                        <p className="text-lg">Google</p>
-                                    </a>
-                                </li>
-                                }
-                                {props.data.my_podboxx?.apple_url !== null &&
-                                <li>
-                                    <a
-                                        href={props.data.my_podboxx?.apple_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-bold hover:text-red-500"
-                                    >
-                                        <p className="text-lg">Itunes</p>
-                                    </a>
-                                </li>
-                                }
-                                {props.data.my_podboxx?.spotify_url !== null &&
-                                <li>
-                                    <a
-                                        href={props.data.my_podboxx?.spotify_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-bold hover:text-red-500"
-                                    >
-                                        <p className="text-lg">Spotify</p>
-                                    </a>
-                                </li>
-                                }
-                                {props.data.my_podboxx?.linkedin_url !== null &&
-                                <li>
-                                    <a
-                                        href={props.data.my_podboxx?.linkedin_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-bold hover:text-red-500"
-                                    >
-                                        <p className="text-lg">LinkedIn</p>
-                                    </a>
-                                </li>
-                                }
+                                                </button>
+                                            </a>
+                                        </li>
+                                )}
                             </ul>
                         </div>
+                        }
                     </div>
-                    {/*<DarkMode/>*/}
                 </div>
+                <div className="flex-none md:invisible">
+                    <div className="dropdown dropdown-end">
+                        <div tabIndex={0} className="btn btn-square btn-ghost">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                 className="inline-block w-6 h-6 stroke-current">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                      d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/>
+                            </svg>
+                        </div>
+                        <ul className="shadow menu dropdown-content bg-24dp rounded-box w-52">
+                            {isLogged ?
+                                <li>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => router.push('/user/subscriptions')}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                                             viewBox="0 0 24 24"
+                                             width="24px" fill="#FFFFFF" strokeWidth="2"
+                                             className="inline-block w-5 mr-2 stroke-current">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        Subscriptions
+                                    </button>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => signOut(userState.channel, userDispatch)}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                                             viewBox="0 0 24 24"
+                                             width="24px" fill="#FFFFFF" strokeWidth="2"
+                                             className="inline-block w-5 mr-2 stroke-current">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        Sign Out
+                                    </button>
+                                </li> :
+                                <li>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => router.push('/user/login')}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                                             viewBox="0 0 24 24"
+                                             width="24px"
+                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
+                                             strokeWidth="2">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        <Link href="/user/login">Sign In</Link>
+                                    </button>
+                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
+                                            onClick={() => router.push('/user/register')}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px"
+                                             viewBox="0 0 24 24"
+                                             width="24px"
+                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
+                                             strokeWidth="2">
+                                            <path
+                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                        </svg>
+                                        <Link href="/user/register">Register</Link>
+                                    </button>
+                                </li>}
+                            {props.data.my_podboxx?.fb_url !== null &&
+                            <li>
+                                <a
+                                    href={props.data.my_podboxx?.fb_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-bold hover:text-red-500"
+                                >
+                                    <p className="text-lg">Facebook</p>
+                                </a>
+                            </li>
+                            }
+                            {props.data.my_podboxx?.twitter_url !== null &&
+                            <li>
+                                <a
+                                    href={props.data.my_podboxx?.twitter_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-bold hover:text-red-500"
+                                >
+                                    <p className="text-lg">Twitter</p>
+                                </a>
+                            </li>
+                            }
+                            {props.data.my_podboxx?.youtube_url !== null &&
+                            <li>
+                                <a
+                                    href={props.data.my_podboxx?.youtube_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-bold hover:text-red-500"
+                                >
+                                    <p className="text-lg">Youtube</p>
+                                </a>
+                            </li>
+                            }
+                            {props.data.my_podboxx?.google_url !== null &&
+                            <li>
+                                <a
+                                    href={props.data.my_podboxx?.google_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-bold hover:text-red-500"
+                                >
+                                    <p className="text-lg">Google</p>
+                                </a>
+                            </li>
+                            }
+                            {props.data.my_podboxx?.apple_url !== null &&
+                            <li>
+                                <a
+                                    href={props.data.my_podboxx?.apple_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-bold hover:text-red-500"
+                                >
+                                    <p className="text-lg">Itunes</p>
+                                </a>
+                            </li>
+                            }
+                            {props.data.my_podboxx?.spotify_url !== null &&
+                            <li>
+                                <a
+                                    href={props.data.my_podboxx?.spotify_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-bold hover:text-red-500"
+                                >
+                                    <p className="text-lg">Spotify</p>
+                                </a>
+                            </li>
+                            }
+                            {props.data.my_podboxx?.linkedin_url !== null &&
+                            <li>
+                                <a
+                                    href={props.data.my_podboxx?.linkedin_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-bold hover:text-red-500"
+                                >
+                                    <p className="text-lg">LinkedIn</p>
+                                </a>
+                            </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                {/*<DarkMode/>*/}
+                {/*</div>*/}
             </div>
         </header>
     );
