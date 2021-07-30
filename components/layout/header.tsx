@@ -14,8 +14,8 @@ import {faGem, faUserCircle} from '@fortawesome/free-regular-svg-icons'
 import {useRouter} from "next/router";
 import {Props, UserContext} from "../userContext/user-context";
 import {signOut} from "../userContext/sign_out";
-import Socials from "../socials";
-
+import Socials from "./socials";
+import {SignInButton, SignOutButton, SignUpButton} from './header-buttons'
 export default function Header({...props}) {
     const router = useRouter()
     const {userState, userDispatch} = useContext<Props>(UserContext)
@@ -97,28 +97,9 @@ export default function Header({...props}) {
                                 </div>
                                 :
                                 <div className="invisible md:visible">
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => router.push('/user/login')}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
-                                             width="24px"
-                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                             strokeWidth="2">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        <Link href="/user/login">Sign In</Link>
-                                    </button>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => router.push('/user/register')}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
-                                             width="24px"
-                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                             strokeWidth="2">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        <Link href="/user/register">Register</Link>
-                                    </button>
+                                    <SignInButton router={() => router.push('/user/login')}/>
+                                    <SignUpButton router={() => router.push('/user/register')}/>
+                                    <SignOutButton router={() => signOut(userState.channel, userDispatch)} link='Sign Out'/>
                                 </div>}
                         </>}
                     </div>
@@ -184,7 +165,7 @@ export default function Header({...props}) {
                                       d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/>
                             </svg>
                         </div>
-                        <ul className="shadow menu dropdown-content bg-24dp rounded-box w-52">
+                        <ul className="shadow menu dropdown-content bg-24dp rounded-box w-52 text-center">
                             {isLogged ?
                                 <li>
                                     <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
@@ -211,30 +192,8 @@ export default function Header({...props}) {
                                     </button>
                                 </li> :
                                 <li>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => router.push('/user/login')}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px"
-                                             viewBox="0 0 24 24"
-                                             width="24px"
-                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                             strokeWidth="2">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        <Link href="/user/login">Sign In</Link>
-                                    </button>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => router.push('/user/register')}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px"
-                                             viewBox="0 0 24 24"
-                                             width="24px"
-                                             fill="#FFFFFF" className="inline-block w-5 mr-2 stroke-current"
-                                             strokeWidth="2">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        <Link href="/user/register">Register</Link>
-                                    </button>
+                                    <SignInButton router={() => router.push('/user/login')} mobile={true}/>
+                                    <SignUpButton router={() => router.push('/user/register')} mobile={true}/>
                                 </li>}
                             <Socials href={props.data.my_podboxx?.fb_url} text='Facebook'/>
                             <Socials href={props.data.my_podboxx?.twitter_url} text='Twitter'/>
