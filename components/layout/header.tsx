@@ -122,7 +122,7 @@ export default function Header({...props}) {
                         props.data.channels.some(subscription_required) &&
                         <div className="dropdown dropdown-end">
                             <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
-                                <span><FontAwesomeIcon icon={faPodcast} className='mr-2' size='sm'/>Podcast</span>
+                                <span><FontAwesomeIcon icon={faPodcast} className='mr-2' size='lg'/>Podcast</span>
                             </div>
                             <ul className="shadow menu dropdown-content bg-24dp rounded-box w-64">
                                 {Object.keys(props.data.channels).map((value, index) =>

@@ -35,7 +35,6 @@ const Login: React.FC = () => {
                 router.push('/')
             })
             .catch(error => {
-                userDispatch({type: 'ERROR'})
                 ErrorNotification(userDispatch, 'There was an error while signing in.', 'sign_up')
                 setLoginError('Please verify your credentials and try again.')
             });
