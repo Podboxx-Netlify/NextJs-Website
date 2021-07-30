@@ -14,6 +14,7 @@ import {faGem, faUserCircle} from '@fortawesome/free-regular-svg-icons'
 import {useRouter} from "next/router";
 import {Props, UserContext} from "../userContext/user-context";
 import {signOut} from "../userContext/sign_out";
+import Socials from "../socials";
 
 export default function Header({...props}) {
     const router = useRouter()
@@ -128,76 +129,13 @@ export default function Header({...props}) {
                         <ul
                             className="flex items-center text-center justify-center lg:container px-5 my-auto text-md md:px-6 flex-wrap select-none">
                             <li>
-                                {props.data.my_podboxx?.fb_url !== null &&
-                                <a
-                                    href={props.data.my_podboxx?.fb_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500 mx-2"
-                                >
-                                    <FontAwesomeIcon icon={faFacebookF} size='lg'/>
-                                </a>
-                                }
-                                {props.data.my_podboxx?.twitter_url !== null &&
-                                <a
-                                    href={props.data.my_podboxx?.twitter_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500 mx-2"
-                                >
-                                    <FontAwesomeIcon icon={faTwitter} size='lg'/>
-                                </a>
-                                }
-                                {props.data.my_podboxx?.youtube_url !== null &&
-                                <a
-                                    href={props.data.my_podboxx?.youtube_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500 mx-2"
-                                >
-                                    <FontAwesomeIcon icon={faYoutube} size='lg'/>
-                                </a>
-                                }
-                                {props.data.my_podboxx?.google_url !== null &&
-                                <a
-                                    href={props.data.my_podboxx?.google_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500 mx-2"
-                                >
-                                    <FontAwesomeIcon icon={faGoogle} size='lg'/>
-                                </a>
-                                }
-                                {props.data.my_podboxx?.apple_url !== null &&
-                                <a
-                                    href={props.data.my_podboxx?.apple_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500 mx-2"
-                                >
-                                    <FontAwesomeIcon icon={faItunes} size='lg'/>
-                                </a>
-                                }
-                                {props.data.my_podboxx?.spotify_url !== null &&
-                                <a
-                                    href={props.data.my_podboxx?.spotify_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500 mx-2"
-                                >
-                                    <FontAwesomeIcon icon={faSpotify} size='lg'/>
-                                </a>
-                                }
-                                {props.data.my_podboxx?.linkedin_url !== null &&
-                                <a
-                                    href={props.data.my_podboxx?.linkedin_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500 mx-2"
-                                >
-                                    <FontAwesomeIcon icon={faLinkedin} size='lg'/>
-                                </a>
-                                }
+                                <Socials href={props.data.my_podboxx?.fb_url} icon={faFacebookF}/>
+                                <Socials href={props.data.my_podboxx?.twitter_url} icon={faTwitter}/>
+                                <Socials href={props.data.my_podboxx?.youtube_url} icon={faYoutube}/>
+                                <Socials href={props.data.my_podboxx?.google_url} icon={faGoogle}/>
+                                <Socials href={props.data.my_podboxx?.apple_url} icon={faItunes}/>
+                                <Socials href={props.data.my_podboxx?.spotify_url} icon={faSpotify}/>
+                                <Socials href={props.data.my_podboxx?.linkedin_url} icon={faLinkedin}/>
                             </li>
                         </ul>}
                         {typeof window !== undefined && props.data.channels && Object.keys(props.data.channels).length > 1 &&
@@ -298,90 +236,13 @@ export default function Header({...props}) {
                                         <Link href="/user/register">Register</Link>
                                     </button>
                                 </li>}
-                            {props.data.my_podboxx?.fb_url !== null &&
-                            <li>
-                                <a
-                                    href={props.data.my_podboxx?.fb_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500"
-                                >
-                                    <p className="text-lg">Facebook</p>
-                                </a>
-                            </li>
-                            }
-                            {props.data.my_podboxx?.twitter_url !== null &&
-                            <li>
-                                <a
-                                    href={props.data.my_podboxx?.twitter_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500"
-                                >
-                                    <p className="text-lg">Twitter</p>
-                                </a>
-                            </li>
-                            }
-                            {props.data.my_podboxx?.youtube_url !== null &&
-                            <li>
-                                <a
-                                    href={props.data.my_podboxx?.youtube_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500"
-                                >
-                                    <p className="text-lg">Youtube</p>
-                                </a>
-                            </li>
-                            }
-                            {props.data.my_podboxx?.google_url !== null &&
-                            <li>
-                                <a
-                                    href={props.data.my_podboxx?.google_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500"
-                                >
-                                    <p className="text-lg">Google</p>
-                                </a>
-                            </li>
-                            }
-                            {props.data.my_podboxx?.apple_url !== null &&
-                            <li>
-                                <a
-                                    href={props.data.my_podboxx?.apple_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500"
-                                >
-                                    <p className="text-lg">Itunes</p>
-                                </a>
-                            </li>
-                            }
-                            {props.data.my_podboxx?.spotify_url !== null &&
-                            <li>
-                                <a
-                                    href={props.data.my_podboxx?.spotify_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500"
-                                >
-                                    <p className="text-lg">Spotify</p>
-                                </a>
-                            </li>
-                            }
-                            {props.data.my_podboxx?.linkedin_url !== null &&
-                            <li>
-                                <a
-                                    href={props.data.my_podboxx?.linkedin_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-bold hover:text-red-500"
-                                >
-                                    <p className="text-lg">LinkedIn</p>
-                                </a>
-                            </li>
-                            }
+                            <Socials href={props.data.my_podboxx?.fb_url} text='Facebook'/>
+                            <Socials href={props.data.my_podboxx?.twitter_url} text='Twitter'/>
+                            <Socials href={props.data.my_podboxx?.youtube_url} text='Youtube'/>
+                            <Socials href={props.data.my_podboxx?.google_url} text='Google'/>
+                            <Socials href={props.data.my_podboxx?.apple_url} text='Itunes'/>
+                            <Socials href={props.data.my_podboxx?.spotify_url} text='Spotify'/>
+                            <Socials href={props.data.my_podboxx?.linkedin_url} text='Linkedin'/>
                         </ul>
                     </div>
                 </div>
