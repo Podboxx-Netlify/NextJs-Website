@@ -10,12 +10,23 @@ import {
     faTwitter,
     faYoutube
 } from '@fortawesome/free-brands-svg-icons'
-import {faGem, faUserCircle} from '@fortawesome/free-regular-svg-icons'
+import {
+    faBars,
+    faCreditCard,
+    faGem,
+    faHome,
+    faPodcast,
+    faSignOutAlt,
+    faUser,
+    faUserEdit,
+    faUserPlus
+} from '@fortawesome/free-solid-svg-icons'
 import {useRouter} from "next/router";
 import {Props, UserContext} from "../userContext/user-context";
 import {signOut} from "../userContext/sign_out";
 import Socials from "./socials";
-import {SignInButton, SignOutButton, SignUpButton} from './header-buttons'
+import UserButton from './user-button'
+
 export default function Header({...props}) {
     const router = useRouter()
     const {userState, userDispatch} = useContext<Props>(UserContext)
@@ -47,68 +58,56 @@ export default function Header({...props}) {
     const subscription_required = (e) => e.subscription_required === true
 
     return (
-        <header className="sticky z-10 top-0">
+        <header className="sticky z-10 top-0 max-w-screen min-w-screen">
             <div className="navbar shadow-lg bg-16dp text-neutral-content h-24 ">
+
                 <div className="px-2 mx-2 navbar-start">
                     <span className="text-lg font-bold select-none"><Link
                         href='/'>{props.data?.title || 'Loading...'}</Link></span>
                 </div>
-                <div className="navbar-center hidden px-2 mx-2 lg:flex">
-                    <div className="flex items-stretch">
-                        <a className="btn btn-ghost btn-sm rounded-btn" onClick={() => router.replace('/')}>
-                            Home
-                        </a>
+
+                <div className="navbar-center px-2 mx-2 lg:flex invisible md:visible hidden">
+                    <div className="flex items-stretch invisible md:visible">
+                        <UserButton onClick={() => router.replace('/')} icon={faHome}
+                                    content={'Home'}/>
                         {props.data.channels.some(subscription_required) &&
                         <>
                             {isLogged ?
-                                <div className="dropdown dropdown-end invisible md:visible">
+                                <div className="dropdown dropdown-end">
                                     <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
-                                        <FontAwesomeIcon icon={faUserCircle} className='mr-2' size='lg'/>My Account
+                                        <FontAwesomeIcon icon={faUser} className='mr-2' size='sm'/>My Account
                                     </div>
                                     <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-52">
-                                        <li>
-                                            <a>
-                                                <button
-                                                    className="focus:outline-none w-full font-medium whitespace-nowrap"
-                                                    onClick={() => router.push('/user/dashboard')}>
-                                                    Dashboard
-                                                </button>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a>
-                                                <button
-                                                    className="focus:outline-none w-full font-medium whitespace-nowrap"
-                                                    onClick={() => router.push('/user/subscriptions')}>
-                                                    Subscriptions
-                                                </button>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a>
-                                                <button
-                                                    className="focus:outline-none w-full font-medium whitespace-nowrap"
-                                                    onClick={() => signOut(userState.channel, userDispatch)}>
-                                                    Sign Out
-                                                </button>
-                                            </a>
-                                        </li>
+                                        <li><a>
+                                            <UserButton onClick={() => router.push('/user/profile')}
+                                                        icon={faUserEdit} content={'Profile'} dropdown={true}/>
+                                        </a></li>
+                                        <li><a>
+                                            <UserButton onClick={() => router.push('/user/subscriptions')}
+                                                        icon={faCreditCard} content={'Subscriptions'} dropdown={true}/>
+                                        </a></li>
+                                        <li><a>
+                                            <UserButton onClick={() => signOut(userState.channel, userDispatch)}
+                                                        icon={faSignOutAlt} content={'Sign Out'} dropdown={true}/>
+                                        </a></li>
                                     </ul>
                                 </div>
                                 :
-                                <div className="invisible md:visible">
-                                    <SignInButton router={() => router.push('/user/login')}/>
-                                    <SignUpButton router={() => router.push('/user/register')}/>
-                                    <SignOutButton router={() => signOut(userState.channel, userDispatch)} link='Sign Out'/>
-                                </div>}
+                                <>
+                                    <UserButton onClick={() => router.push('/user/login')} icon={faUser}
+                                                content={<Link href="/user/login">Sign In</Link>}/>
+                                    <UserButton onClick={() => router.push('/user/register')} icon={faUserPlus}
+                                                content={<Link href="/user/register">Register</Link>}/>
+                                </>}
                         </>}
                     </div>
                 </div>
+
                 <div className="navbar-end">
                     <div className="flex items-stretch invisible md:visible">
                         {props.data && props.data.my_podboxx &&
                         <ul
-                            className="flex items-center text-center justify-center lg:container px-5 my-auto text-md md:px-6 flex-wrap select-none">
+                            className="flex items-center text-center justify-center lg:container px-5 my-auto text-md md:px-6 flex-nowrap select-none">
                             <li>
                                 <Socials href={props.data.my_podboxx?.fb_url} icon={faFacebookF}/>
                                 <Socials href={props.data.my_podboxx?.twitter_url} icon={faTwitter}/>
@@ -122,91 +121,68 @@ export default function Header({...props}) {
                         {typeof window !== undefined && props.data.channels && Object.keys(props.data.channels).length > 1 &&
                         props.data.channels.some(subscription_required) &&
                         <div className="dropdown dropdown-end">
-                            <div tabIndex={0}
-                                 className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">Select Podcast
+                            <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
+                                <span><FontAwesomeIcon icon={faPodcast} className='mr-2' size='sm'/>Podcast</span>
                             </div>
-                            <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-64">
+                            <ul className="shadow menu dropdown-content bg-24dp rounded-box w-64">
                                 {Object.keys(props.data.channels).map((value, index) =>
-                                    props.data.channels[index]['subscription_required'] ?
-                                        <li key={index}>
-                                            <a>
-                                                <button
-                                                    className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500" : "focus:outline-none w-full"}
-                                                    onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'], true)}>
-                                                            <span
-                                                                className="line-clamp-1 font-semibold capitalize">
-                                                                <FontAwesomeIcon icon={faGem} size='sm'/> &nbsp;
-                                                                {props.data.channels[index]['title']}</span>
-                                                </button>
-                                            </a>
-                                        </li> :
-                                        <li key={index}>
-                                            <a>
-                                                <button
-                                                    className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? "focus:outline-none w-full text-green-500" : "focus:outline-none w-full"}
-                                                    onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'])}>
-                                                            <span
-                                                                className="line-clamp-1 capitalize">{props.data.channels[index]['title']}</span>
-                                                </button>
-                                            </a>
-                                        </li>
+                                    <li key={index}>
+                                        <a className={index % 2 == 0 ? "" : "bg-12dp"}>
+                                            <UserButton
+                                                onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'])}
+                                                icon={props.data.channels[index]['subscription_required'] ? faGem : undefined}
+                                                currentChannel={currentChannel?.toString() === props.data.channels[index]['id'].toString()}
+                                                content={props.data.channels[index]['title']} dropdown={true}/>
+                                        </a>
+                                    </li>
                                 )}
                             </ul>
                         </div>
                         }
                     </div>
-                </div>
-                <div className="flex-none md:invisible">
-                    <div className="dropdown dropdown-end">
-                        <div tabIndex={0} className="btn btn-square btn-ghost">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                 className="inline-block w-6 h-6 stroke-current">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                      d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/>
-                            </svg>
+                    <div className="flex-none visible md:invisible">
+                        <div className="dropdown dropdown-end">
+                            <div tabIndex={0} className="btn btn-square btn-ghost">
+                                <FontAwesomeIcon icon={faBars} size='lg'/>
+                            </div>
+                            <ul className="shadow menu dropdown-content bg-24dp rounded-box w-52 text-center">
+                                {isLogged ?
+                                    <li>
+                                        <a className='my-0 py-0'>
+                                            <UserButton onClick={() => router.push('/user/subscriptions')}
+                                                        content={'Subscriptions'} dropdown={true}/>
+                                        </a>
+                                        <a className='my-0 py-0'>
+                                            <UserButton onClick={() => signOut(userState.channel, userDispatch)}
+                                                        content={'Sign Out'} dropdown={true}/>
+                                        </a>
+                                    </li> :
+                                    <li>
+                                        <a className='my-0 py-0'>
+                                            <UserButton onClick={() => router.push('/user/login')}
+                                                        content={"Sign In"} dropdown={true}/>
+                                        </a>
+                                        <a className='my-0 py-0'>
+                                            <UserButton onClick={() => router.push('/user/register')}
+                                                        content={'Register'} dropdown={true}/>
+                                        </a>
+                                    </li>}
+                                {props.data && props.data.my_podboxx &&
+                                <li className='text-center'>
+                                    <hr className='border-t-2 my-2'/>
+                                    <Socials mobile={true} href={props.data.my_podboxx?.fb_url} text='Facebook'/>
+                                    <Socials mobile={true} href={props.data.my_podboxx?.twitter_url} text='Twitter'/>
+                                    <Socials mobile={true} href={props.data.my_podboxx?.youtube_url} text='Youtube'/>
+                                    <Socials mobile={true} href={props.data.my_podboxx?.google_url} text='Google'/>
+                                    <Socials mobile={true} href={props.data.my_podboxx?.apple_url} text='Itunes'/>
+                                    <Socials mobile={true} href={props.data.my_podboxx?.spotify_url} text='Spotify'/>
+                                    <Socials mobile={true} href={props.data.my_podboxx?.linkedin_url} text='Linkedin'/>
+                                </li>
+                                }
+                            </ul>
                         </div>
-                        <ul className="shadow menu dropdown-content bg-24dp rounded-box w-52 text-center">
-                            {isLogged ?
-                                <li>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => router.push('/user/subscriptions')}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px"
-                                             viewBox="0 0 24 24"
-                                             width="24px" fill="#FFFFFF" strokeWidth="2"
-                                             className="inline-block w-5 mr-2 stroke-current">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        Subscriptions
-                                    </button>
-                                    <button className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap"
-                                            onClick={() => signOut(userState.channel, userDispatch)}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px"
-                                             viewBox="0 0 24 24"
-                                             width="24px" fill="#FFFFFF" strokeWidth="2"
-                                             className="inline-block w-5 mr-2 stroke-current">
-                                            <path
-                                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                                        </svg>
-                                        Sign Out
-                                    </button>
-                                </li> :
-                                <li>
-                                    <SignInButton router={() => router.push('/user/login')} mobile={true}/>
-                                    <SignUpButton router={() => router.push('/user/register')} mobile={true}/>
-                                </li>}
-                            <Socials href={props.data.my_podboxx?.fb_url} text='Facebook'/>
-                            <Socials href={props.data.my_podboxx?.twitter_url} text='Twitter'/>
-                            <Socials href={props.data.my_podboxx?.youtube_url} text='Youtube'/>
-                            <Socials href={props.data.my_podboxx?.google_url} text='Google'/>
-                            <Socials href={props.data.my_podboxx?.apple_url} text='Itunes'/>
-                            <Socials href={props.data.my_podboxx?.spotify_url} text='Spotify'/>
-                            <Socials href={props.data.my_podboxx?.linkedin_url} text='Linkedin'/>
-                        </ul>
                     </div>
                 </div>
-                {/*<DarkMode/>*/}
-                {/*</div>*/}
             </div>
         </header>
     );
