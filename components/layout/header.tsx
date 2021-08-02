@@ -127,7 +127,8 @@ export default function Header({...props}) {
                             <ul className="shadow menu dropdown-content bg-24dp rounded-box w-64">
                                 {Object.keys(props.data.channels).map((value, index) =>
                                     <li key={index}>
-                                        <a className={index % 2 == 0 ? "" : "bg-12dp"}>
+                                        <a className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? 'bg-08dp cursor-default btn-disabled' : ""}>
+                                            {/*  <a className={index % 2 == 0 ? "" : "bg-12dp"}>*/}
                                             <UserButton
                                                 onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'])}
                                                 icon={props.data.channels[index]['subscription_required'] ? faGem : undefined}
