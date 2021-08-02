@@ -74,8 +74,10 @@ export default function Header({...props}) {
                         <>
                             {isLogged ?
                                 <div className="dropdown dropdown-end">
-                                    <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
-                                        <FontAwesomeIcon icon={faUser} className='mr-2' size='sm'/>My Account
+                                    <div tabIndex={0}
+                                         className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap whitespace-nowrap text-lg font-medium capitalize">
+                                        <FontAwesomeIcon icon={faUser} className='mr-2' size='sm'/>
+                                        My Account
                                     </div>
                                     <ul className="shadow menu dropdown-content bg-base-100 rounded-box w-52">
                                         <li><a>
@@ -128,7 +130,6 @@ export default function Header({...props}) {
                                 {Object.keys(props.data.channels).map((value, index) =>
                                     <li key={index}>
                                         <a className={currentChannel?.toString() === props.data.channels[index]['id'].toString() ? 'bg-08dp cursor-default btn-disabled' : ""}>
-                                            {/*  <a className={index % 2 == 0 ? "" : "bg-12dp"}>*/}
                                             <UserButton
                                                 onClick={() => currentChannel?.toString() !== props.data.channels[index]['id'].toString() && handleChannelChange(props.data.channels[index]['id'])}
                                                 icon={props.data.channels[index]['subscription_required'] ? faGem : undefined}
