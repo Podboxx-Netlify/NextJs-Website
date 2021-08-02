@@ -211,12 +211,12 @@ const Subscriptions: React.FC = () => {
             <div className="p-2 card bg-08dp shadow-md">
                 <div className="form-control card-body">
                     <div className="text-center text-3xl font-bold card-title">Subscriptions</div>
-                    <div className="grid grid-cols-2 mx-10">
-                        <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 lg:mx-10">
+                        <div className="card shadow-md lg:card-side bg-12dp text-primary-content">
                             <div className="card-body">
                                 <p className="text-xl">Payment Method</p>
                                 {data?.subscription?.payment_method &&
-                                <div className='rounded-box border border-primary p-4 whitespace-nowrap mr-5 my-2'>
+                                <div className='rounded-box border border-primary p-2 lg:p-4 whitespace-nowrap lg:mr-5 my-2'>
                                     <div className='whitespace-nowrap text-lg'>
                                         {data?.subscription?.payment_method.expiration_month + '/' + data?.subscription?.payment_method.expiration_year + ' '}
                                         {data?.subscription?.payment_method.number}
@@ -225,13 +225,13 @@ const Subscriptions: React.FC = () => {
                                              src={data?.subscription?.payment_method['image_url']}
                                              alt={data?.subscription?.payment_method['payment_type']}/>
                                         <button
-                                            className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap float-right"
+                                            className="btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap float-right mt-1 lg:mt-0"
                                             onClick={() => destroyPaymentMethod(data?.subscription?.payment_method.token)}>Delete
                                         </button>
                                     </div>
                                 </div>
                                 }
-                                <div className="collapse w-96 rounded-box border border-base-300 collapse-arrow">
+                                <div className="collapse lg:w-96 rounded-box border border-base-300 collapse-arrow">
                                     <input type="checkbox"/>
                                     <div className="collapse-title text-xl font-medium">
                                         {data?.subscription?.payment_method ? "Edit Payment Method" : "Add a Payment Method"}
@@ -261,22 +261,22 @@ const Subscriptions: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content ml-5">
+                        <div className="card shadow-md lg:card-side bg-12dp text-primary-content lg:ml-5 mt-4 w-full lg:mt-0">
                             <div className="card-body">
                                 <p className="text-2xl">Plans</p>
                                 {Object.keys(channelPlans).length > 0 &&
                                 <>
                                     {Object.keys(channelPlans).map((value, index) =>
                                         <div key={index}
-                                             className={data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ? "w-96 rounded-box border border-success my-2 bg-24dp" : "w-96 rounded-box border border-primary my-2 bg-24dp"}>
+                                             className={data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ? "lg:w-96 rounded-box rounded-xl border border-success p-2 my-2 bg-24dp" : "lg:w-96 rounded-box rounded-xl border border-primary my-2 bg-24dp"}>
                                             <div
-                                                className="collapse-title text-2xl font-medium capitalize bg-28dp rounded-t-box text-center">
+                                                className="text-2xl font-medium capitalize mt-2 mx-2 lg:mx-0 lg:text-center">
                                                 {value}
                                                 <span
-                                                    className={data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ? "badge badge-success ml-5" : "badge badge-primary ml-5"}>
+                                                    className={data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ? "badge badge-success mb-2 lg:mb-0 ml-2 lg:ml-5 " : "badge badge-primary mb-2 lg:mb-0 ml-2 lg:ml-5 "}>
                                                     {'$' + channelPlans[value]['price']} {channelPlans[value]['billing_cycle'] <= 11 ? 'per month' : 'per year'}</span>
                                             </div>
-                                            <div className="m-3 flex flex-auto whitespace-nowrap justify-between">
+                                            <div className="lg:m-3 p-3 flex flex-auto whitespace-nowrap justify-between ">
 
                                                 {/*<div className="">*/}
                                                 <span className="text-left">
@@ -293,7 +293,7 @@ const Subscriptions: React.FC = () => {
                                                         </button>
                                                     </span> :
                                                     <button
-                                                        className="btn btn-outline border-success text-success rounded-btn btn-sm whitespace-nowrap justify-center hover:bg-success hover:border-success hover:text-white"
+                                                        className="btn btn-outline border-success text-success rounded-btn btn-sm mb-2 w-1/2 whitespace-nowrap justify-center hover:bg-success hover:border-success hover:text-white border-0 lg:border-2"
                                                         onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>{data?.subscription?.status.includes('Active') ? 'Change Plan' : 'Subscribe'}
                                                     </button>
                                                 }
