@@ -8,6 +8,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 export default function EditPassword() {
     const [error, setError] = useState<string[]>([])
+    const [toggleForm, setToggleForm] = useState<boolean>(false)
     const [passwordScore, setPasswordScore] = useState<number>(0)
     const [passwordColor, setPasswordColor] = useState<string>("progress progress-error")
     const {userState, userDispatch} = useContext<Props>(UserContext)
@@ -74,7 +75,7 @@ export default function EditPassword() {
 
     const verifyPassword = () => {
         let errors = []
-        !validator.isStrongPassword(formData.new_password, {minSymbols: 0}) && errors.push('Password needs atleast 8 characters, 1 number, 1 lowercase and 1 uppercase.')
+        !validator.isStrongPassword(formData.new_password, {minSymbols: 0}) && errors.push('Password needs at least 8 characters, 1 number, 1 lowercase and 1 uppercase.')
         formData.new_password !== formData.password_confirmation && errors.push('Your password confirmation does not match.')
         validator.isEmpty(formData.current_password) && errors.push('Your current password cannot be blank.')
         setError(errors)
@@ -82,11 +83,12 @@ export default function EditPassword() {
     }
 
     return (
-        <div className="collapse-content">
+        <div className='collapse-content'>
             {error.length > 0 &&
-            error.map((e => <span key={e} className='w-full text-error'>{e}</span>
-            ))}
-            <form name="edit_password_form" id="edit_password_form"
+            <div className='mt-3'>
+                {error.map((e => <p key={e} className='w-full text-error'>{e}</p>))}
+            </div>}
+            <form name="edit_password_form" id="edit_password_form" className='mt-3'
                   onSubmit={updatePassword} action='#'>
                 <label className="label"> <span
                     className="label-text">Current Password</span> </label>
@@ -116,7 +118,7 @@ export default function EditPassword() {
                     <button type="submit"
                             className={userState.isLoading ? "btn btn-outline loading" : "btn btn-outline"}>
                         <FontAwesomeIcon icon={faSave} className='mr-2'/>
-                        Submit
+                        Update Password
                     </button>
                 </div>
             </form>

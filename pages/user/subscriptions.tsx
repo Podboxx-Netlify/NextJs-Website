@@ -18,6 +18,7 @@ interface UserProfile {
         ends_at: string
         next_billing_date: string
         next_billing_address: number
+        next_billing_amount: number
         status: string
         payment_method: {
             expiration_month: string

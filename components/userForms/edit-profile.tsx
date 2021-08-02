@@ -1,17 +1,20 @@
 import React, {useContext, useEffect, useState} from "react";
 import {Props, UserContext} from "../userContext/user-context";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faSave} from '@fortawesome/free-solid-svg-icons';
+import {faEdit, faSave, faTimes} from '@fortawesome/free-solid-svg-icons';
 import {ErrorNotification, SuccessNotification} from "../notification";
 import Axios from "axios";
 import {mutate} from "swr";
 import validator from 'validator';
+import clsx from "clsx";
+import EditPassword from "./edit-password";
 
 export default function EditProfile(props) {
     const [error, setError] = useState<string[]>([])
     const {userState, userDispatch} = useContext<Props>(UserContext)
     const [formData, setFormData] = useState({...props.data})
     const [editProfile, setEditProfile] = useState<boolean>(false)
+    const [editPassword, setEditPassword] = useState<boolean>(false)
 
     useEffect(() => {
         setFormData(props.data)
@@ -54,52 +57,61 @@ export default function EditProfile(props) {
     }
 
     return (
-        <div className="grid grid-cols-2">
-            <div className='col-span-2'>
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+            <div className='lg:col-span-2'>
                 {error.length > 0 &&
                 error.map((e => <p key={e} className='w-full text-error whitespace-pre-line text-center'>{e}&nbsp;</p>
                 ))}
             </div>
-            <div className='col-span-1 mr-1'>
+            <div className='col-span-1 lg:mr-1'>
                 <label className="label">
                     <span className="label-text">First Name</span>
                 </label>
-                <input className="input bg-32dp form-control"
+                <input className="input bg-32dp form-control w-full input-sm lg:input-md"
                        name="first_name" id="first_name" disabled={!editProfile}
                        onChange={e => handleChange('first_name', e.target.value)}
                        value={formData?.first_name || ''}/>
             </div>
-            <div className='col-span-1 ml-1'>
+            <div className='col-span-1 lg:ml-1'>
                 <label className="label">
                     <span className="label-text">Last Name</span>
                 </label>
-                <input className="input bg-32dp form-control"
+                <input className="input bg-32dp form-control w-full input-sm lg:input-md"
                        name="last_name" id="last_name" disabled={!editProfile}
                        onChange={e => handleChange('last_name', e.target.value)}
                        value={formData?.last_name || ''}/>
             </div>
-            <div className='col-span-2'>
+            <div className='lg:col-span-2'>
                 <label className="label">
                     <span className="label-text">Email</span>
                 </label>
                 <input
-                    className="input bg-32dp w-full form-control"
+                    className="input bg-32dp form-control w-full input-sm lg:input-md"
                     name="email" id="email" disabled={!editProfile}
                     onChange={e => handleChange('email', e.target.value)}
                     value={formData?.email || ''}/>
             </div>
-            <div className='col-span-1 mr-1'/>
-            <div className="form-control justify-center mt-9 text-center ml-1">
+            <div className="form-control justify-center mt-9 text-center lg:mr-1">
+                    <button className="btn btn-outline btn-sm lg:btn-md" onClick={() => setEditPassword(!editPassword)}>
+                        <FontAwesomeIcon icon={editPassword ? faTimes:faEdit} className='mr-2'/>
+                        {editPassword ? 'Close Password Form':'Edit Password'}
+                    </button>
+            </div>
+            <div className="form-control justify-center mt-3 lg:mt-9 text-center lg:ml-1">
                 {editProfile ?
-                    <button type="submit" className="btn btn-outline" onClick={() => updateProfile()}>
+                    <button type="submit" className="btn btn-outline btn-sm lg:btn-md" onClick={() => updateProfile()}>
                         <FontAwesomeIcon icon={faSave} className='mr-2'/>
-                        Submit
+                        Update Profile
                     </button> :
-                    <button className="btn btn-outline" onClick={() => setEditProfile(!editProfile)}>
+                    <button className="btn btn-outline btn-sm lg:btn-md" onClick={() => setEditProfile(!editProfile)}>
                         <FontAwesomeIcon icon={faEdit} className='mr-2'/>
                         Edit Profile
                     </button>
                 }
+            </div>
+            <div className={clsx("collapse rounded-box mt-5 lg:min-h-96 lg:col-span-2",
+                editPassword ? 'collapse-open' : 'collapse-close')}>
+                <EditPassword/>
             </div>
         </div>
     )
