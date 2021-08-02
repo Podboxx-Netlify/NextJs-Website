@@ -6,6 +6,7 @@ import useSWR from "swr";
 import fetcher from "../../libs/fetcher";
 import {UserProfile} from "./subscriptions";
 import EditProfile from "../../components/userForms/edit-profile";
+import EditPassword from "../../components/userForms/edit-password";
 
 const Profile: React.FC = () => {
     const router = useRouter()
@@ -32,13 +33,13 @@ const Profile: React.FC = () => {
                         <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content">
                             <div className="card-body">
                                 <EditProfile data={data}/>
-                                {/*<div className="collapse w-96 rounded-box  collapse-arrow mt-5">*/}
-                                {/*    <input type="checkbox"/>*/}
-                                {/*    <div className="collapse-title text-xl font-medium">*/}
-                                {/*        Edit Password*/}
-                                {/*    </div>*/}
-                                {/*    <EditPassword/>*/}
-                                {/*</div>*/}
+                                <div className="collapse rounded-box collapse-arrow mt-5 min-h-96">
+                                    <input type="checkbox"/>
+                                    <div className="collapse-title text-xl font-medium">
+                                        Edit Password
+                                    </div>
+                                    <EditPassword/>
+                                </div>
                             </div>
                         </div>
                         <div className="card shadow-2xl lg:card-side bg-12dp text-primary-content ml-5">

@@ -22,7 +22,7 @@ const Register: React.FC = () => {
     const verifyData = () => {
         let errors = []
         !validator.isEmail(formData.email) && errors.push('Email is invalid.')
-        !validator.isStrongPassword(formData.password, {minSymbols: 0}) && errors.push('Password needs atleast 8 characters, 1 number, 1 lowercase and 1 uppercase.')
+        !validator.isStrongPassword(formData.password, {minSymbols: 0}) && errors.push('Password needs at least 8 characters, 1 number, 1 lowercase and 1 uppercase.')
         formData.password !== formData.password_confirmation && errors.push('Your password confirmation does not match.')
         !validator.isAlpha(formData.first_name) && errors.push('First name cannot have numbers.')
         !validator.isAlpha(formData.last_name) && errors.push('Last name cannot have numbers.')
@@ -102,29 +102,29 @@ const Register: React.FC = () => {
                     {error.length > 0 &&
                     error.map((e => <span key={e} className='w-full text-error'>{e}</span>
                     ))}
-                    <form name="registration_form" id="registration_form" onSubmit={handleSubmit} action=''>
+                    <form name="registration_form" id="registration_form" onSubmit={handleSubmit} action='' autoComplete='on'>
                         <label className="label"><span className="label-text">First Name</span></label>
-                        <input className="input input-bordered w-full" type="text"
+                        <input className="input input-bordered w-full" type="text" autoComplete='given-name'
                                name="first_name" id="first_name" value={formData.first_name}
                                onChange={handleChange}
                                placeholder="Enter Your First Name"/>
                         <label className="label"><span className="label-text">Last Name</span></label>
                         <input className="input input-bordered w-full" type="text"
-                               name="last_name" id="last_name" value={formData.last_name}
+                               name="last_name" id="last_name" value={formData.last_name} autoComplete='family-name'
                                onChange={handleChange}
                                placeholder="Enter Your Last Name"/>
                         <label className="label"><span className="label-text">Email</span></label>
-                        <input className="input input-bordered w-full" type="email"
+                        <input className="input input-bordered w-full" type="email" autoComplete='email'
                                name="email" id="email" value={formData.email} onChange={handleChange}
                                placeholder="Enter Your Email"/>
                         <label className="label"><span className="label-text">Password</span></label>
-                        <input className="input input-bordered w-full" type="password"
+                        <input className="input input-bordered w-full" type="password" autoComplete='new-password'
                                name="password" id="password" value={formData.password} onChange={onPasswordChange}
                                placeholder="Enter A Password"/>
                         <progress className={passwordColor} value={passwordScore} max={50}/>
                         <label className="label"><span className="label-text">Confirm Password</span></label>
                         <input className="input input-bordered w-full" type="password"
-                               name="password_confirmation" id="password_confirmation"
+                               name="password_confirmation" id="password_confirmation" autoComplete='new-password'
                                value={formData.password_confirmation} onChange={handleChange}
                                placeholder="Re-Enter Your Password"/>
                         <div className="form-control justify-center mt-5">

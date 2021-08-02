@@ -3,6 +3,8 @@ import {Props, UserContext} from "../userContext/user-context";
 import validator from 'validator';
 import JtockAuth from "j-tockauth";
 import {ErrorNotification, SuccessNotification} from "../../components/notification";
+import {faSave} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 export default function EditPassword() {
     const [error, setError] = useState<string[]>([])
@@ -113,6 +115,7 @@ export default function EditPassword() {
                 <div className="form-control justify-center mt-5">
                     <button type="submit"
                             className={userState.isLoading ? "btn btn-outline loading" : "btn btn-outline"}>
+                        <FontAwesomeIcon icon={faSave} className='mr-2'/>
                         Submit
                     </button>
                 </div>
