@@ -151,6 +151,10 @@ export default function Header({...props}) {
                                 {isLogged ?
                                     <li>
                                         <a className='my-0 py-0'>
+                                            <UserButton onClick={() => router.push('/user/profile')}
+                                                        content={'Profile'} dropdown={true}/>
+                                        </a>
+                                        <a className='my-0 py-0'>
                                             <UserButton onClick={() => router.push('/user/subscriptions')}
                                                         content={'Subscriptions'} dropdown={true}/>
                                         </a>

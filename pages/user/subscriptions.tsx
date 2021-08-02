@@ -7,7 +7,7 @@ import fetcher from "../../libs/fetcher";
 import {ErrorNotification, SuccessNotification} from "../../components/notification";
 import useTimeoutFn from "../../libs/useTimeoutFn";
 import {useRouter} from "next/router";
-import {useRendersCount} from "../../libs/useRenderCount";
+
 interface UserProfile {
     id: number
     email: string
@@ -216,7 +216,8 @@ const Subscriptions: React.FC = () => {
                             <div className="card-body">
                                 <p className="text-xl">Payment Method</p>
                                 {data?.subscription?.payment_method &&
-                                <div className='rounded-box border border-primary p-2 lg:p-4 whitespace-nowrap lg:mr-5 my-2'>
+                                <div
+                                    className='rounded-box border border-primary p-2 lg:p-4 whitespace-nowrap lg:mr-5 my-2'>
                                     <div className='whitespace-nowrap text-lg'>
                                         {data?.subscription?.payment_method.expiration_month + '/' + data?.subscription?.payment_method.expiration_year + ' '}
                                         {data?.subscription?.payment_method.number}
@@ -236,7 +237,7 @@ const Subscriptions: React.FC = () => {
                                     <div className="collapse-title text-xl font-medium">
                                         {data?.subscription?.payment_method ? "Edit Payment Method" : "Add a Payment Method"}
                                     </div>
-                                    <div className="collapse-content">
+                                    <div className="collapse-content p-0">
                                         <form id="cardForm">
                                             <label htmlFor="card-number"
                                                    className={formError?.includes('number') ? 'text-error' : ''}>
@@ -261,7 +262,8 @@ const Subscriptions: React.FC = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="card shadow-md lg:card-side bg-12dp text-primary-content lg:ml-5 mt-4 w-full lg:mt-0">
+                        <div
+                            className="card shadow-md lg:card-side bg-12dp text-primary-content lg:ml-5 mt-4 w-full lg:mt-0">
                             <div className="card-body">
                                 <p className="text-2xl">Plans</p>
                                 {Object.keys(channelPlans).length > 0 &&
@@ -276,28 +278,27 @@ const Subscriptions: React.FC = () => {
                                                     className={data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ? "badge badge-success mb-2 lg:mb-0 ml-2 lg:ml-5 " : "badge badge-primary mb-2 lg:mb-0 ml-2 lg:ml-5 "}>
                                                     {'$' + channelPlans[value]['price']} {channelPlans[value]['billing_cycle'] <= 11 ? 'per month' : 'per year'}</span>
                                             </div>
-                                            <div className="lg:m-3 p-3 flex flex-auto whitespace-nowrap justify-between ">
-
-                                                {/*<div className="">*/}
-                                                <span className="text-left">
+                                            <span className="text-center">
                                                     {data?.subscription?.subscription_plan.name.indexOf(value) !== -1 &&
-                                                    <span className={data?.subscription?.status.includes('Active') ?
-                                                        'text-success text-lg' : ''}>{data?.subscription?.status}
-                                                    </span>}
+                                                    <p className={data?.subscription?.status.includes('Active') ?
+                                                        'text-success text-xl' : ''}>{data?.subscription?.status}
+                                                    </p>}
                                                 </span>
-                                                {data?.subscription && data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ?
-                                                    <span className="text-right">
+                                            <div
+                                                className="lg:m-3 p-1 flex flex-auto flex-wrap lg:flex-nowrap white-space justify-end">
+                                                <div className="">
+                                                    {data?.subscription && data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ?
                                                         <button
-                                                            className="btn btn-primary btn-outline rounded-btn btn-sm whitespace-nowrap justify-center"
+                                                            className="btn btn-primary btn-outline rounded-btn btn-sm mb-2 text-xs lg:text-md btn-block lg:whitespace-nowrap"
                                                             onClick={handleCancelPlan}>Cancel subscription
                                                         </button>
-                                                    </span> :
-                                                    <button
-                                                        className="btn btn-outline border-success text-success rounded-btn btn-sm mb-2 w-1/2 whitespace-nowrap justify-center hover:bg-success hover:border-success hover:text-white border-0 lg:border-2"
-                                                        onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>{data?.subscription?.status.includes('Active') ? 'Change Plan' : 'Subscribe'}
-                                                    </button>
-                                                }
-                                                {/*</div>*/}
+                                                        :
+                                                        <button
+                                                            className="btn btn-outline border-success text-success rounded-btn btn-sm mb-2 whitespace-nowrap justify-center hover:bg-success hover:border-success hover:text-white"
+                                                            onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>{data?.subscription?.status.includes('Active') ? 'Change Plan' : 'Subscribe'}
+                                                        </button>
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
                                     )}
