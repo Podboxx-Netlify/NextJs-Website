@@ -19,6 +19,8 @@
 module.exports = (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+    require('@cypress/code-coverage/task')(on, config)
+    on('file:preprocessor', require('@cypress/code-coverage/use-browserify-istanbul'))
     config.env.NEXT_PUBLIC_API_URL='http://localhost:4000/api/'
     config.env.NEXT_PUBLIC_URL='http://localhost:4000/'
     config.env.NEXT_PUBLIC_STATION_ID=30
