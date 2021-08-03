@@ -7,6 +7,7 @@ import fetcher from "../../libs/fetcher";
 import {ErrorNotification, SuccessNotification} from "../../components/notification";
 import useTimeoutFn from "../../libs/useTimeoutFn";
 import {useRouter} from "next/router";
+import useBreakpoints from "../../libs/useBreakpoints";
 
 interface UserProfile {
     id: number
@@ -38,6 +39,7 @@ export type {UserProfile}
 
 const Subscriptions: React.FC = () => {
     const router = useRouter()
+    const {isXs, isSm, isMd, isLg, active} = useBreakpoints();
     const [isReady, cancel, reset] = useTimeoutFn(() => router.push('/user/login'), 5000);
     const [formError, setFormError] = useState([])
     const {userState, userDispatch} = useContext<Props>(UserContext)
@@ -238,7 +240,7 @@ const Subscriptions: React.FC = () => {
                                         {data?.subscription?.payment_method ? "Edit Payment Method" : "Add a Payment Method"}
                                     </div>
                                     <div className="collapse-content p-0">
-                                        <form id="cardForm">
+                                        <form id="cardForm" className='p-0'>
                                             <label htmlFor="card-number"
                                                    className={formError?.includes('number') ? 'text-error' : ''}>
                                                 Card Number</label>
