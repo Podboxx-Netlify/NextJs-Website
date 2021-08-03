@@ -20,7 +20,8 @@
     "prereport:combined": "yarn combine:reports",
     "report:combined": "npx nyc report --reporter lcov --reporter text --report-dir coverage",
     "cy:open": "cypress open",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "coverage": "nyc check-coverage"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",

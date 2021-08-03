@@ -7,7 +7,7 @@ describe('Logging In', function () {
         it('is redirected on visit to /login when no session', function () {
             // we must have a valid session token to be logged
             // in else we are redirected to /login
-            cy.visit('http://localhost:5000/user/subscriptions')
+            cy.visit(Cypress.config().baseUrl + '/user/subscriptions')
             cy.wait(6000)
             cy.url().should('include', 'login')
         })
@@ -15,7 +15,7 @@ describe('Logging In', function () {
 
     context('Login Form Submission', function () {
         beforeEach(function () {
-            cy.visit('http://localhost:5000/user/login');
+            cy.visit(Cypress.config().baseUrl + '/user/login');
             window.localStorage.setItem('channel', 31)
         })
 
@@ -35,7 +35,7 @@ describe('Logging In', function () {
             cy.get('form').submit()
 
             // we should be redirected to home page
-            cy.url().should('equal', 'http://localhost:5000/')
+            cy.url().should('equal', Cypress.config().baseUrl + '/')
             cy.get('.Toastify__toast-body').should('contain', 'Signed in successfully')
 
             cy.window()
@@ -51,12 +51,12 @@ describe('Logging In', function () {
             cy.login(email, password)
         })
         it('should be logged and not get redirected', function () {
-            cy.visit('http://localhost:5000/user/subscriptions')
+            cy.visit(Cypress.config().baseUrl + '/user/subscriptions')
             cy.wait(6000)
             cy.url().should('include', 'subscriptions')
         })
         it('Change Subscription', function () {
-            cy.visit('http://localhost:5000/user/subscriptions')
+            cy.visit(Cypress.config().baseUrl + '/user/subscriptions')
             cy.debug()
         })
 
