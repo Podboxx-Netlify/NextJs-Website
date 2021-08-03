@@ -104,7 +104,7 @@ module.exports = {
         styled: true,
         base: true,
         utils: true,
-        logs: true,
+        logs: false,
         rtl: false,
         themes: [
             {

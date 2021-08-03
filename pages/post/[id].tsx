@@ -21,7 +21,7 @@ const Post: React.FC = () => {
     dayjs.extend(utc)
     const router = useRouter()
     const baseUri = `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/`
-    const {data, error} = useSWR<Data>(baseUri + 'podcast/' + router.query.id, fetcher)
+    const {data, error} = useSWR<Data>(baseUri + 'podcast/' + router?.query?.id, fetcher)
     const {userState} = useContext<Props>(UserContext)
     if (error && error.message.includes('not authorized')) return (
         <>

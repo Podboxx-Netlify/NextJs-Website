@@ -8,7 +8,8 @@
     "start": "next start",
     "export": "next build && next export",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest --config ./jest.config.ts",
+    "cypress:open": "cypress open"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -22,6 +23,7 @@
     "@tailwindcss/typography": "^0.4.1",
     "braintree-web": "^3.79.1",
     "clsx": "^1.1.1",
+    "cypress": "^8.1.0",
     "daisyui": "^1.10.0",
     "dayjs": "^1.10.6",
     "j-tockauth": "^1.2.7",
@@ -40,19 +42,24 @@
   "devDependencies": {
     "@babel/core": "^7.14.8",
     "@babel/preset-env": "^7.14.9",
+    "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "^7.14.5",
     "@types/jest": "^26.0.24",
     "@types/jquery": "^3.5.5",
     "@types/node": "^16.4.10",
     "@types/react": "^17.0.11",
+    "@wojtekmaj/enzyme-adapter-react-17": "^0.6.3",
     "autoprefixer": "^10.2.6",
     "babel-jest": "^27.0.6",
+    "enzyme": "^3.11.0",
+    "enzyme-to-json": "^3.6.2",
     "eslint": "7.32.0",
     "eslint-config-next": "11.0.1",
     "jest": "^27.0.6",
     "postcss": "^8.3.5",
     "tailwindcss": "^2.2.0",
     "ts-jest": "^27.0.4",
+    "ts-node": "^10.1.0",
     "typescript": "^4.3.5"
   }
 }
