@@ -58,7 +58,7 @@ const Login: React.FC = () => {
                         <div className="form-control justify-center mt-5">
                             <div className='text-error'>{loginError !== '' && loginError}</div>
                             <button
-                                className={userState.isLoading ? "btn btn-outline loading" : "btn btn-outline"}>
+                                className={userState?.isLoading ? "btn btn-outline loading" : "btn btn-outline"}>
                                 Sign In
                             </button>
                         </div>

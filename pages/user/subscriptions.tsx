@@ -44,16 +44,16 @@ const Subscriptions: React.FC = () => {
     const [formError, setFormError] = useState([])
     const {userState, userDispatch} = useContext<Props>(UserContext)
     const [channelPlans, setChannelPlans] = useState([])
-    const {data} = useSWR<UserProfile>(userState.isLogged ? `${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile` : null, fetcher, {
+    const {data} = useSWR<UserProfile>(userState?.isLogged ? `${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile` : null, fetcher, {
         onErrorRetry: (error) => {
             if (error.message.includes('not authorized')) return
         }
     })
 
     useEffect(() => {
-        if (userState.isLogged === true) cancel()
-        if (userState.isLogged) listChannelPlans().then(() => getToken().then(res => instance(res, data)));
-    }, [userState.isLogged])
+        if (userState?.isLogged === true) cancel()
+        if (userState?.isLogged) listChannelPlans().then(() => getToken().then(res => instance(res, data)));
+    }, [userState?.isLogged])
 
     const getToken = async () => {
         const response = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/client_token`)
@@ -206,7 +206,7 @@ const Subscriptions: React.FC = () => {
         });
     }
 
-    if (!userState.isLogged || !data) return <div className="cover-spin" id='cover-spin'/>
+    if (!userState?.isLogged || !data) return <div className="cover-spin" id='cover-spin'/>
 
     return (
         <div className="w-full grid place-items-center mt-10">

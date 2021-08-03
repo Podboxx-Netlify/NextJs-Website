@@ -1,0 +1,84 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login should render without crashing 1`] = `
+<div
+  className="w-full grid place-items-center mt-10"
+>
+  <div
+    className="p-2 card bg-12dp shadow-md"
+  >
+    <div
+      className="form-control card-body"
+    >
+      <div
+        className="text-center text-3xl font-bold card-title"
+      >
+        Sign In
+      </div>
+      <form
+        action=""
+        id="login_form"
+        name="login_form"
+        onSubmit={[Function]}
+      >
+        <label
+          className="label"
+        >
+          <span
+            className="label-text"
+          >
+            Email
+          </span>
+        </label>
+        <input
+          className="input input-bordered w-full"
+          id="email"
+          name="email"
+          onChange={[Function]}
+          placeholder="Enter Your Email"
+          type="text"
+          value=""
+        />
+        <label
+          className="label"
+        >
+           
+          <span
+            className="label-text"
+          >
+            Password
+          </span>
+           
+        </label>
+        <input
+          className="input input-bordered w-full"
+          id="password"
+          name="password"
+          onChange={[Function]}
+          placeholder="Enter A Password"
+          type="password"
+          value=""
+        />
+        <a
+          className="label-text-alt"
+          href="#"
+        >
+          Forgot username?
+        </a>
+        <div
+          className="form-control justify-center mt-5"
+        >
+          <div
+            className="text-error"
+          />
+          <button
+            className="btn btn-outline"
+          >
+            Sign In
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+`;
