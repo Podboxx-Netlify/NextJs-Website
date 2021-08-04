@@ -1,4 +1,5 @@
 {
   "projectId": "6122tz",
-  "baseUrl": "http://localhost:5000"
+  "baseUrl": "http://localhost:5000",
+  "experimentalStudio": true
 }

@@ -1,6 +1,6 @@
 import Header from './header'
 import Footer from './footer'
-import React, {useContext} from "react";
+import React, {useContext, useEffect} from "react";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
 import {Props, UserContext} from "../userContext/user-context";
@@ -36,6 +36,15 @@ export type {WebsiteData}
 export default function Layout({...props}) {
     const {userState} = useContext<Props>(UserContext)
     const {data} = useSWR<WebsiteData>(`${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/website`, fetcher)
+
+    useEffect(() => {
+        data && localStorage.getItem('channel') === null && defaultChannel()
+    },[data])
+
+    const defaultChannel = () => {
+        let channel_id = data?.channels.find(c => c?.subscription_required === false).id
+        localStorage.setItem('channel', channel_id?.toString())
+    }
 
     if (!data) return <div className="cover-spin" id='cover-spin'/>
     return (

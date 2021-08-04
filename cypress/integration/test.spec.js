@@ -1,0 +1,124 @@
+// it('Unauthorized Post', function() {
+//   cy.visit('http://localhost:5000/');
+//   cy.get('.text-2xl').should('not.have.text', 'There was an error loading the episodes.');
+//   cy.get('.items-stretch > .dropdown > .btn > span').click({force: true});
+//   cy.wait(500)
+//   cy.get('.items-stretch > .dropdown > .shadow > :nth-child(1) > a > .focus\\:outline-none').click({force: true}{force: true});
+//   cy.get(':nth-child(1) > .sm\\:flex-row > .sm\\:flex-1 > .gap-2 > .btn-outline > a').click({force: true}{force: true});
+//   cy.get('.Toastify__toast-body').should('have.text', 'You are not authorized to access this resource.');
+// });
+//
+// it('Login - subscription', function () {
+//   cy.visit('http://localhost:5000');
+//   cy.get('.items-stretch > .dropdown > .btn > span').click({force: true});
+//   cy.get('.items-stretch > .dropdown > .shadow > :nth-child(1) > a > .focus\\:outline-none').click({force: true});
+//   cy.get(':nth-child(2) > .btn > .svg-inline--fa').click({force: true});
+//   cy.get('.flex-none > :nth-child(2) > .shadow > :nth-child(1) > :nth-child(1) > .focus\\:outline-none').click({force: true});
+//   cy.get('#email').type('tommy.c,{force: true}ote+3@podboxx.com');
+//   cy.get('#password').type('Abc12345');
+// ,{force: true}//   cy.get('.form-control > .btn').click({force: true});
+//   cy.get('.Toastify__toast-body').should('have.text', 'Signed in successfully');
+//   cy.get('.flex-none > :nth-child(2) > .btn > .svg-inline--fa > path').click({force: true});
+//   cy.get(':nth-child(2) > .focus\\:outline-none').should('have.text', 'Subscriptions');
+//   cy.get('.flex-none > :nth-child(2) > .btn > .svg-inline--fa').click({force: true});
+//   cy.get(':nth-child(2) > .focus\\:outline-none').click({force: true});
+//   cy.get('.text-lg > .btn').should('be.visible');
+//   cy.get('.form-control > .grid > :nth-child(1) > .card-body').click({force: true});
+//   cy.get('.text-lg > .btn').click({force: true});
+//   cy.get('.Toastify__toast-body').should('have.text', 'Could not delete your payment method, please cancel your subscription first!');
+// })
+
+it('Ui Test', function() {
+  cy.visit('http://localhost:5000');
+  cy.get('.btn > a').should('have.text', 'View episode');
+  cy.get('[style="display: inline-block; max-width: 100%; overflow: hidden; position: relative; box-sizing: border-box; margin: 0px;"] > .rounded-md').should('be.visible');
+  cy.get('.flex-none > :nth-child(2) > .btn').should('be.visible');
+  cy.get('.text-lg > a').should('have.attr', 'href', '/');
+  cy.get('.select-none > [target="_blank"]').should('have.text', 'PodBoxx');
+  cy.get(':nth-child(2) > .btn > .svg-inline--fa > path').click({force: true});
+  cy.get('li.text-center > :nth-child(1)').should('be.visible');
+  cy.get(':nth-child(1) > .btn > span').click({force: true});
+  cy.get(':nth-child(1) > .shadow > :nth-child(1) > a > .focus\\:outline-none > .svg-inline--fa > path').should('be.visible');
+  cy.get(':nth-child(1) > .btn > span > .svg-inline--fa > path').click({force: true});
+  cy.get(':nth-child(1) > .shadow > :nth-child(1) > a > .focus\\:outline-none > .svg-inline--fa').click({force: true});
+  cy.get(':nth-child(1) > .sm\\:flex-row > .sm\\:flex-1 > .gap-2 > :nth-child(1) > .whitespace-pre-wrap').should('be.visible');
+  cy.get(':nth-child(7) > .whitespace-pre-wrap').click({force: true});
+  cy.get(':nth-child(1) > .sm\\:flex-row > .sm\\:flex-1 > .gap-2 > .btn-primary.btn-xs > .inline-block').should('be.visible');
+  cy.get(':nth-child(1) > .sm\\:flex-row > .sm\\:flex-1 > .gap-2 > .btn-primary.btn-xs > .whitespace-pre-wrap').click({force: true});
+  cy.get(':nth-child(2) > .btn > .svg-inline--fa > path').click({force: true});
+  cy.get(':nth-child(2) > .focus\\:outline-none').click({force: true});
+  cy.get('.card-body > .text-center').should('have.text', 'Register');
+  cy.get('#first_name').type('cypress',{force: true});
+  cy.get('#last_name').type('test',{force: true});
+  cy.get('#email').type('cypress@test',{force: true});
+  cy.get('#password').type('abcd',{force: true});
+  cy.get('#password_confirmation').type('abc',{force: true});
+  cy.get('.progress').should('have.class', 'progress-error');
+  cy.get('.form-control > .btn').click({force: true});
+  cy.get('.card-body > :nth-child(2)').should('have.text', 'Email is invalid.');
+  cy.get('.card-body > :nth-child(3)').should('have.text', 'Password needs at least 8 characters, 1 number, 1 lowercase and 1 uppercase.');
+  cy.get('.card-body > :nth-child(4)').should('have.text', 'Your password confirmation does not match.');
+  cy.get(':nth-child(2) > .btn > .svg-inline--fa > path').click({force: true});
+  cy.get('.flex-none > :nth-child(2) > .shadow > :nth-child(1) > :nth-child(1) > .focus\\:outline-none').click({force: true});
+  cy.get('.card-body > .text-center').should('have.text', 'Sign In');
+  cy.get('#email').clear({force: true});
+  cy.get('#email').type('tommy.cote+3@podboxx.com',{force: true});
+  cy.get('#password').clear({force: true});
+  cy.get('#password').type('Abc',{force: true});
+  cy.get('.form-control > .btn').click({force: true});
+  cy.get('.Toastify__toast-body').should('have.text', 'There was an error while signing in.');
+  cy.get('.text-error').should('have.text', 'Please verify your credentials and try again.');
+  cy.get('.Toastify__toast-body').click({force: true});
+  cy.get('#password').clear({force: true});
+  cy.get('#password').type('Abc12345',{force: true});
+  cy.get('.form-control > .btn').click({force: true});
+  cy.get('.Toastify__toast-body').should('have.text', 'Signed in successfully');
+  cy.get('.flex-none > :nth-child(2) > .btn > .svg-inline--fa').click({force: true});
+  cy.get('.flex-none > :nth-child(2) > .shadow > :nth-child(1) > :nth-child(1) > .focus\\:outline-none').should('have.text', 'Profile');
+  cy.get('.flex-none > :nth-child(2) > .shadow > :nth-child(1) > :nth-child(1) > .focus\\:outline-none').click({force: true});
+  cy.get('.lg\\:mt-9 > .btn').should('have.text', 'Edit Profile');
+  cy.get('.mt-9 > .btn').should('have.text', 'Edit Password');
+  cy.get('.lg\\:mt-9 > .btn').click({force: true});
+  cy.get('.lg\\:mt-9 > .btn').should('have.text', 'Update Profile');
+  cy.get('#email').should('be.enabled');
+  cy.get('#last_name').should('be.enabled');
+  cy.get('#first_name').should('be.enabled');
+  cy.get('.mt-9 > .btn').click({force: true});
+  cy.get('.mt-9 > .btn').should('have.text', 'Close Password Form');
+  cy.get('#current-password').should('be.enabled');
+  cy.get('#new-password').should('be.enabled');
+  cy.get('#password-confirmation').should('be.enabled');
+  cy.get('#edit_password_form > .form-control > .btn').click({force: true});
+  cy.get('.collapse-content > div.mt-3 > :nth-child(1)').should('have.text', 'Password needs at least 8 characters, 1 number, 1 lowercase and 1 uppercase.');
+  cy.get('div.mt-3 > :nth-child(2)').should('have.text', 'Your current password cannot be blank.');
+  cy.get('#current-password').clear({force: true});
+  cy.get('#current-password').type('gdsa',{force: true});
+  cy.get('#new-password').clear({force: true});
+  cy.get('#new-password').type('dsa',{force: true});
+  cy.get('#password-confirmation').clear({force: true});
+  cy.get('#password-confirmation').type('dsa',{force: true});
+  cy.get('#edit_password_form > .form-control > .btn').click({force: true});
+  cy.get('div.mt-3 > .w-full').should('have.text', 'Password needs at least 8 characters, 1 number, 1 lowercase and 1 uppercase.');
+  cy.get('#new-password').clear({force: true});
+  cy.get('#new-password').type('Abc123456',{force: true});
+  cy.get('#password-confirmation').clear({force: true});
+  cy.get('#password-confirmation').type('Abc123456',{force: true});
+  cy.get('.progress').should('have.class', 'progress-success');
+  cy.get('#edit_password_form > .form-control > .btn').click({force: true});
+  cy.get('.Toastify__toast-body').should('have.text', 'There was an error when editing your password.');
+  cy.get('.btn > a').should('have.attr', 'href', '/user/subscriptions');
+  cy.get('.btn > a').click({force: true});
+  cy.get('.text-3xl').should('have.text', 'Subscriptions');
+})
+
+it('Test registration Form errors', function() {
+  cy.visit('http://localhost:5000/user/register');
+  cy.get('.form-control > .btn').click();
+  cy.get('.card-body > :nth-child(2)').should('have.text', 'Email is invalid.');
+  cy.get('.card-body > :nth-child(3)').should('have.text', 'Password needs at least 8 characters, 1 number, 1 lowercase and 1 uppercase.');
+  cy.get('.card-body > :nth-child(6)').should('have.text', 'First name cannot be empty.');
+  cy.get('.card-body > :nth-child(7)').should('have.text', 'Last name cannot be empty.');
+  cy.get('#password').clear();
+  cy.get('#password').type('Abc123!@#');
+  cy.get('.progress').should('have.class', 'progress-success');
+})

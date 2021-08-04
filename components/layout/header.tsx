@@ -67,9 +67,9 @@ export default function Header({...props}) {
     // Returns the current channel's subscription required
     // to either hide or show login/register buttons
     const getCurrentChannel = () => {
-        let channelId = localStorage.getItem('channel')
-        let channel = props.data.channels.find(c => c?.id?.toString() === channelId)
-        return channel.subscription_required
+        let channelId = localStorage?.getItem('channel')
+        let channel = props?.data?.channels?.find(c => c?.id?.toString() === channelId)
+        return channel?.subscription_required
     }
 
     // returns either current channel == id
@@ -84,8 +84,8 @@ export default function Header({...props}) {
                         href='/'>{props.data?.title || 'Loading...'}</Link></span>
                 </div>
                 {/* Nav bar center */}
-                <div className="navbar-center px-2 mx-2 lg:flex invisible md:visible hidden">
-                    <div className="flex items-stretch invisible md:visible">
+                <div className="navbar-center px-2 mx-2 lg:flex invisible lg:visible hidden">
+                    <div className="flex items-stretch invisible lg:visible">
                         <UserButton onClick={() => router.replace('/')} icon={faHome}
                                     content={'Home'}/>
                         {props.data.channels.some(subscription_required) && getCurrentChannel() &&
@@ -124,11 +124,11 @@ export default function Header({...props}) {
                 </div>
                 {/* Nav bar end */}
                 <div className="navbar-end">
-                    <div className="flex items-stretch invisible md:visible">
+                    <div className="flex items-stretch invisible lg:visible">
                         {Object.keys(props?.data?.my_podboxx).some(e => e.includes('url')) &&
                         <ul
                             className="flex items-center text-center justify-center lg:container px-5 my-auto text-md md:px-6 flex-nowrap select-none">
-                            <li>
+                            <li className="whitespace-nowrap">
                                 <Socials href={props?.data?.my_podboxx?.fb_url} icon={faFacebookF}/>
                                 <Socials href={props?.data?.my_podboxx?.twitter_url} icon={faTwitter}/>
                                 <Socials href={props?.data?.my_podboxx?.youtube_url} icon={faYoutube}/>
@@ -159,7 +159,7 @@ export default function Header({...props}) {
                         </div>
                         }
                     </div>
-                    <div className="flex-none visible md:invisible">
+                    <div className="flex-none visible lg:invisible">
                         {props?.data?.channels?.some(subscription_required) &&
                         <div className="dropdown dropdown-end">
                             <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
