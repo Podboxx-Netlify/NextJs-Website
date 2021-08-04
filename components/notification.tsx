@@ -4,7 +4,7 @@ import React from "react";
 
 function SuccessNotification(dispatch?: React.Dispatch<any>, message?: string, id?: string) {
     NProgress.done()
-    dispatch !== undefined && dispatch({type: 'STOP_LOADING'})
+    dispatch !== null && dispatch({type: 'STOP_LOADING'})
     toast.success(message ? message : 'Success!', {
         toastId: id ? id : 'success',
         position: "top-right",
@@ -19,7 +19,7 @@ function SuccessNotification(dispatch?: React.Dispatch<any>, message?: string, i
 
 function ErrorNotification(dispatch?: React.Dispatch<any>, message?: string, id?: string) {
     NProgress.done()
-    dispatch !== undefined && dispatch({type: 'STOP_LOADING'})
+    dispatch !== null && dispatch({type: 'STOP_LOADING'})
     toast.error(message ? message : 'Error', {
         toastId: id ? id : 'error',
         position: "top-right",

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.32% </span>
+                <span class="strong">63.16% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/38</span>
+                <span class='fraction'>24/38</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>1/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.32% </span>
+                <span class="strong">63.16% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/38</span>
+                <span class='fraction'>24/38</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -98,20 +98,20 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -135,24 +135,24 @@
 import NProgress from 'nprogress'
 import React from "react";
 &nbsp;
-<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >function SuccessNotification(dispatch?: React.Dispatch&lt;any&gt;, message?: string, id?: string) {</span></span>
-<span class="cstat-no" title="statement not covered" >    NProgress.done()</span>
-<span class="cstat-no" title="statement not covered" >    dispatch !== undefined &amp;&amp; dispatch({type: 'STOP_LOADING'})</span>
-<span class="cstat-no" title="statement not covered" >    toast.success(message ? message : 'Success!', {</span>
-<span class="cstat-no" title="statement not covered" >        toastId: id ? id : 'success',</span>
-<span class="cstat-no" title="statement not covered" >        position: "top-right",</span>
-<span class="cstat-no" title="statement not covered" >        autoClose: 5000,</span>
-<span class="cstat-no" title="statement not covered" >        hideProgressBar: false,</span>
-<span class="cstat-no" title="statement not covered" >        closeOnClick: true,</span>
-<span class="cstat-no" title="statement not covered" >        pauseOnHover: true,</span>
-<span class="cstat-no" title="statement not covered" >        draggable: true,</span>
-<span class="cstat-no" title="statement not covered" >        progress: undefined,</span>
-<span class="cstat-no" title="statement not covered" >    });</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+function SuccessNotification(dispatch?: React.Dispatch&lt;any&gt;, message?: string, id?: string) {
+    NProgress.done()
+<span class="branch-0 cbranch-no" title="branch not covered" >    dispatch !== null &amp;&amp; dispatch({</span>type: 'STOP_LOADING'})
+    toast.success(message<span class="branch-0 cbranch-no" title="branch not covered" > ? message : 'Success!', {</span>
+        toastId: id<span class="branch-0 cbranch-no" title="branch not covered" > ? id : '</span>success',
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+    });
+}
 &nbsp;
 <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >function ErrorNotification(dispatch?: React.Dispatch&lt;any&gt;, message?: string, id?: string) {</span></span>
 <span class="cstat-no" title="statement not covered" >    NProgress.done()</span>
-<span class="cstat-no" title="statement not covered" >    dispatch !== undefined &amp;&amp; dispatch({type: 'STOP_LOADING'})</span>
+<span class="cstat-no" title="statement not covered" >    dispatch !== null &amp;&amp; dispatch({type: 'STOP_LOADING'})</span>
 <span class="cstat-no" title="statement not covered" >    toast.error(message ? message : 'Error', {</span>
 <span class="cstat-no" title="statement not covered" >        toastId: id ? id : 'error',</span>
 <span class="cstat-no" title="statement not covered" >        position: "top-right",</span>
@@ -175,7 +175,7 @@ export {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Aug 03 2021 14:37:18 GMT-0400 (Eastern Daylight Time)
+                at Tue Aug 03 2021 15:55:52 GMT-0400 (Eastern Daylight Time)
             </div>
         </div>
         <script src="../prettify.js"></script>
