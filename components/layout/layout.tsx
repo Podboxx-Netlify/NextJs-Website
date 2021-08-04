@@ -40,7 +40,7 @@ export default function Layout({...props}) {
     if (!data) return <div className="cover-spin" id='cover-spin'/>
     return (
         <div className="flex flex-col min-h-screen min-w-screen bg-03dp">
-            <ToastContainer/>
+            <ToastContainer/> {/* => Notifications */}
             <title>{data?.title || 'Error'}</title>
             <Header data={data}/>
             <div className='container mx-auto flex-grow'>

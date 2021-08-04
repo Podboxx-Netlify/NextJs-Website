@@ -30,8 +30,7 @@ const Profile: React.FC = () => {
         return 'text-warning'
     }
 
-    console.log(data)
-    // if (!userState.isLogged || !data) return <div className="cover-spin" id='cover-spin'/>
+    if (!userState.isLogged || !data) return <div className="cover-spin" id='cover-spin'/>
     return (
         <div className="w-full grid place-items-center mt-10">
             <div className="p-2 card bg-08dp shadow-md">

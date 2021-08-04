@@ -26,6 +26,7 @@ const UserProvider = ({children}) => {
     const [userState, userDispatch] = useReducer(UserReducer, initialState)
 
     useEffect(() => {
+        // Wait for the client to be loaded before calling fetchChannel
         if (typeof window !== 'undefined') {
             fetchChannel()
         }
@@ -45,6 +46,8 @@ const UserProvider = ({children}) => {
         })).catch(() => localStorage.getItem('J-tockAuth-Storage') !== null && auth.signOut())
     }
 
+    // If channel isn't null && channel != userState.channel => Dispatch to state with new id
+    // Then call isAuth to validate login
     const fetchChannel = () => {
         localStorage.getItem('channel') !== null && localStorage.getItem('channel') !== userState.channel &&
         userDispatch({type: 'FETCH_CHANNEL', channel: localStorage.getItem('channel')});

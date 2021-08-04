@@ -26,27 +26,34 @@ interface Episodes {
 
 const Blog: React.FC = () => {
     const router = useRouter()
-    const [tagFilter, setTagFilter] = useState<string[]>([])
+    const {userState} = useContext<Props>(UserContext)
     const [uri, setUri] = useState<string>()
+    const [tagFilter, setTagFilter] = useState<string[]>([])
     const [shouldFetch, setShouldFetch] = useState<boolean>(false)
     const [pageIndex, setPageIndex] = useState(parseInt(router.query.page as string) || 1);
     const baseUri = `${process.env.NEXT_PUBLIC_API_URL}${process.env.NEXT_PUBLIC_STATION_ID}/`
-    const {userState} = useContext<Props>(UserContext)
     const {data, error} = useSWR<Data>(shouldFetch ? uri + '&page=' + pageIndex : null, fetcher, {
         onErrorRetry: (error) => {
+            // Do not retry if message includes not authorized
             if (error.message.includes('not authorized')) return
         }
     })
-    
+
     useEffect(() => {
+        // Creates the tag query
         let tags = tagFilter.length > 0 ? `&tags=${encodeURIComponent(tagFilter.join(","))}` : ''
+        // Creates the Channel query
         let channel = `channel=${userState.channel || null}`
+        // Changes the endpoints depending if theres any tag filter
         let endpoint = tagFilter.length > 0 ? 'tags_blog?' : 'blog?'
+        // Create the uri with all the queries
         setUri(baseUri + endpoint + channel + tags)
+        // Set the shouldFetch to true if it wasn't true already
         !shouldFetch && setShouldFetch(true)
     }, [userState.channel, tagFilter, baseUri, shouldFetch])
 
     useEffect(() => {
+        // If no tags in query => reset tagFilter array
         router.query.tags === undefined && setTagFilter([])
     }, [router.query.tags])
 
@@ -67,37 +74,38 @@ const Blog: React.FC = () => {
                 to {userState.isLogged ? 'subscribe' : 'sign in'}</button>
         </>
     )
-    if (error) return <div className='text-2xl text-semibold mx-auto mt-10'>There was an error loading the episodes.</div>
+    if (error) return <div className='text-2xl text-semibold mx-auto mt-10'>There was an error loading the
+        episodes.</div>
     if (!data) return <div className="cover-spin" id='cover-spin'/>
-
+    if (Object.keys(data?.podcasts).length <= 0) return <div className='text-2xl text-semibold mx-auto mt-10 ml-5'>No
+        episodes to display for this podcast.</div>
     return (
         <>
-            {data.podcasts && Object.keys(data.podcasts).length > 0 ?
-                <div className="grid grid-cols-1 gap-5 justify-items-center justify-center mt-12">
-                    {Object.keys(data.podcasts).map((value, index) =>
-                        <div key={index} className='w-full'>
-                            <PostCard data={{
-                                id: data.podcasts[index]['id'],
-                                title: data.podcasts[index]['title'],
-                                description: data.podcasts[index]['description'],
-                                blog_content: data.podcasts[index]['blogContent'],
-                                img_url: data.podcasts[index]['image_url'] || '/header_card.png',
-                                publication_date: data.podcasts[index]['publication_date'],
-                                duration: data.podcasts[index]['duration'],
-                                tags: data.podcasts[index]['tags'],
-                                currentFilter: tagFilter,
-                                addFilter: handleAddTag,
-                                removeFilter: handleRemoveTag,
-                            }}/>
-                        </div>
-                    )}
-                </div> :
-                <h1 className='text-main-dark dark:text-white text-5xl text-center justify-self-center select-none'>No
-                    episodes to display</h1>}
-            {data.pages > 0 &&
+            <div className="grid grid-cols-1 gap-5 justify-items-center justify-center mt-12">
+                {/* Blog Posts */}
+                {Object.keys(data.podcasts).map((value, index) =>
+                    <div key={index} className='w-full'>
+                        <PostCard data={{
+                            id: data.podcasts[index]['id'],
+                            title: data.podcasts[index]['title'],
+                            description: data.podcasts[index]['description'],
+                            blog_content: data.podcasts[index]['blogContent'],
+                            img_url: data.podcasts[index]['image_url'] || '/header_card.png',
+                            publication_date: data.podcasts[index]['publication_date'],
+                            duration: data.podcasts[index]['duration'],
+                            tags: data.podcasts[index]['tags'],
+                            currentFilter: tagFilter,
+                            addFilter: handleAddTag,
+                            removeFilter: handleRemoveTag,
+                        }}/>
+                    </div>
+                )}
+            </div>
+            {/* Bottom Pagination */}
+            {data?.pages > 0 &&
             <div className="py-2">
                 <ReactPaginate
-                    pageCount={data.pages + 1}
+                    pageCount={data?.pages + 1}
                     marginPagesDisplayed={1}
                     pageRangeDisplayed={2}
                     onPageChange={(i) => setPageIndex(i.selected + 1)}

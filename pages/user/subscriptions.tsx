@@ -44,7 +44,7 @@ const Subscriptions: React.FC = () => {
     const [formError, setFormError] = useState([])
     const {userState, userDispatch} = useContext<Props>(UserContext)
     const [channelPlans, setChannelPlans] = useState([])
-    const {data} = useSWR<UserProfile>(userState?.isLogged ? `${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile` : null, fetcher, {
+    const {data} = useSWR<UserProfile>(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`, fetcher, {
         onErrorRetry: (error) => {
             if (error.message.includes('not authorized')) return
         }
@@ -52,8 +52,8 @@ const Subscriptions: React.FC = () => {
 
     useEffect(() => {
         if (userState?.isLogged === true) cancel()
-        if (userState?.isLogged) listChannelPlans().then(() => getToken().then(res => instance(res, data)));
-    }, [userState?.isLogged])
+        if (userState?.isLogged && data) listChannelPlans().then(() => getToken().then(res => instance(res, data)));
+    }, [userState?.isLogged, data])
 
     const getToken = async () => {
         const response = userState.channel !== null && await Axios.get(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/client_token`)
@@ -78,9 +78,11 @@ const Subscriptions: React.FC = () => {
             .then(() => mutate(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`))
     }
 
+    // console.log(data?.subscription?.payment_method)
     const handleSubmit = async (nonce: string, data: UserProfile) => {
         const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
         userDispatch({type: 'LOADING'})
+        console.log(data)
         if (userState.user['id'] !== null) {
             if (data?.subscription?.payment_method) {
                 await Axios.put(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/${data?.subscription?.payment_method.token}`,
@@ -120,8 +122,8 @@ const Subscriptions: React.FC = () => {
                 uid: headers['uid'],
                 client: headers['client'],
                 "access-token": headers["access-token"]
-            }).then(() => SuccessNotification(userDispatch, 'Successfully subscribed!'))
-            .catch(() => ErrorNotification(userDispatch, 'There was an error subscribing'))
+            }).then(() => SuccessNotification(userDispatch, 'Successfully subscribed!', 'createPlan'))
+            .catch(() => ErrorNotification(userDispatch, 'There was an error subscribing','createPlan'))
             .then(() => mutate(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`))
     }
 
@@ -135,8 +137,8 @@ const Subscriptions: React.FC = () => {
                 uid: headers['uid'],
                 client: headers['client'],
                 "access-token": headers["access-token"]
-            }).then(() => SuccessNotification(userDispatch, 'Successfully cancelled!'))
-            .catch(() => ErrorNotification(userDispatch, 'There was an error unsubscribing'))
+            }).then(() => SuccessNotification(userDispatch, 'Successfully cancelled!', 'cancelPlan'))
+            .catch(() => ErrorNotification(userDispatch, 'There was an error unsubscribing', 'cancelPlan'))
             .then(() => mutate(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`))
     }
 
