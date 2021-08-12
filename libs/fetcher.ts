@@ -14,7 +14,7 @@ export default async function fetcher<JSON = any>(
     })
 
     if (res.status === 403) {
-        ErrorNotification(null,'You are not authorized to access this resource.','error')
+        ErrorNotification(null, 'You are not authorized to access this resource.', 'error')
         throw new Error('You are not authorized to access this resource.');
     }
 

@@ -9,7 +9,7 @@ class MyDocument extends Document {
     render() {
         return (
             <Html data-theme="theme-podboxx">
-                <Head />
+                <Head/>
                 <body>
                 <Main/>
                 <NextScript/>

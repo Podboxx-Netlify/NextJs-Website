@@ -1,10 +1,10 @@
-import React from "react";
-import Image from 'next/image'
-import Link from 'next/link'
+import {faCalendarAlt, faClock} from '@fortawesome/free-regular-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faCalendarAlt, faClock} from '@fortawesome/free-regular-svg-icons'
+import Image from 'next/image'
+import Link from 'next/link'
+import React from "react";
 
 
 interface Post {

@@ -1,6 +1,6 @@
+import JtockAuth from "j-tockauth";
 import React, {useEffect, useReducer} from 'react';
 import UserReducer from "./user-reducer";
-import JtockAuth from "j-tockauth";
 
 export interface Props {
     userState?: { isLoading: boolean; isLogged: boolean; user: {}; error: boolean; channel: number | string; subscriptions: string[] }

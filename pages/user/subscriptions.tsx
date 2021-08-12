@@ -1,13 +1,13 @@
-import React, {useContext, useEffect, useState} from "react";
-import {client, hostedFields} from "braintree-web"
 import Axios from "axios";
-import {Props, UserContext} from "../../components/userContext/user-context";
-import useSWR, {mutate} from "swr";
-import fetcher from "../../libs/fetcher";
-import {ErrorNotification, SuccessNotification} from "../../components/notification";
-import useTimeoutFn from "../../libs/useTimeoutFn";
+import {client, hostedFields} from "braintree-web"
 import {useRouter} from "next/router";
+import React, {useContext, useEffect, useState} from "react";
+import useSWR, {mutate} from "swr";
+import {ErrorNotification, SuccessNotification} from "../../components/notification";
+import {Props, UserContext} from "../../components/userContext/user-context";
+import fetcher from "../../libs/fetcher";
 import useBreakpoints from "../../libs/useBreakpoints";
+import useTimeoutFn from "../../libs/useTimeoutFn";
 
 interface UserProfile {
     id: number
@@ -123,7 +123,7 @@ const Subscriptions: React.FC = () => {
                 client: headers['client'],
                 "access-token": headers["access-token"]
             }).then(() => SuccessNotification(userDispatch, 'Successfully subscribed!', 'createPlan'))
-            .catch(() => ErrorNotification(userDispatch, 'There was an error subscribing','createPlan'))
+            .catch(() => ErrorNotification(userDispatch, 'There was an error subscribing', 'createPlan'))
             .then(() => mutate(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`))
     }
 
@@ -274,24 +274,24 @@ const Subscriptions: React.FC = () => {
                                 <>
                                     {Object.keys(channelPlans).map((value, index) =>
                                         <div key={index}
-                                             className={data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ? "lg:w-96 rounded-box rounded-xl border border-success p-2 my-2 bg-24dp" : "lg:w-96 rounded-box rounded-xl border border-primary my-2 bg-24dp"}>
+                                             className={data?.subscription?.subscription_plan?.name?.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ? "lg:w-96 rounded-box rounded-xl border border-success p-2 my-2 bg-24dp" : "lg:w-96 rounded-box rounded-xl border border-primary my-2 bg-24dp"}>
                                             <div
                                                 className="text-2xl font-medium capitalize mt-2 mx-2 lg:mx-0 lg:text-center">
                                                 {value}
                                                 <span
-                                                    className={data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ? "badge badge-success mb-2 lg:mb-0 ml-2 lg:ml-5 " : "badge badge-primary mb-2 lg:mb-0 ml-2 lg:ml-5 "}>
+                                                    className={data?.subscription?.subscription_plan?.name?.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ? "badge badge-success mb-2 lg:mb-0 ml-2 lg:ml-5 " : "badge badge-primary mb-2 lg:mb-0 ml-2 lg:ml-5 "}>
                                                     {'$' + channelPlans[value]['price']} {channelPlans[value]['billing_cycle'] <= 11 ? 'per month' : 'per year'}</span>
                                             </div>
                                             <span className="text-center">
-                                                    {data?.subscription?.subscription_plan.name.indexOf(value) !== -1 &&
-                                                    <p className={data?.subscription?.status.includes('Active') ?
+                                                    {data?.subscription?.subscription_plan?.name?.indexOf(value) !== -1 &&
+                                                    <p className={data?.subscription?.status?.includes('Active') ?
                                                         'text-success text-xl' : ''}>{data?.subscription?.status}
                                                     </p>}
                                                 </span>
                                             <div
                                                 className="lg:m-3 p-1 flex flex-auto flex-wrap lg:flex-nowrap white-space justify-end">
                                                 <div className="">
-                                                    {data?.subscription && data?.subscription?.subscription_plan.name.indexOf(value) !== -1 && data?.subscription?.status.includes('Active') ?
+                                                    {data?.subscription && data?.subscription?.subscription_plan?.name?.indexOf(value) !== -1 && data?.subscription?.status?.includes('Active') ?
                                                         <button
                                                             className="btn btn-primary btn-outline rounded-btn btn-sm mb-2 text-xs lg:text-md btn-block lg:whitespace-nowrap"
                                                             onClick={handleCancelPlan}>Cancel subscription
@@ -299,7 +299,7 @@ const Subscriptions: React.FC = () => {
                                                         :
                                                         <button
                                                             className="btn btn-outline border-success text-success rounded-btn btn-sm mb-2 whitespace-nowrap justify-center hover:bg-success hover:border-success hover:text-white"
-                                                            onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>{data?.subscription?.status.includes('Active') ? 'Change Plan' : 'Subscribe'}
+                                                            onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>{data?.subscription?.status?.includes('Active') ? 'Change Plan' : 'Subscribe'}
                                                         </button>
                                                     }
                                                 </div>

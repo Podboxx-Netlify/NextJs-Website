@@ -87,7 +87,6 @@ context('Register', function () {
 })
 
 
-
 // context('User Context', function () {
 //     const email = 'tommy.cote+3@podboxx.com'
 //     const password = 'Abc12345'

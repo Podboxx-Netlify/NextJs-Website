@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
 /**
  * Custom hook that tells you whether a given media query is active.

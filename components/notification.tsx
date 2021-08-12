@@ -1,6 +1,6 @@
-import {toast} from "react-toastify";
 import NProgress from 'nprogress'
 import React from "react";
+import {toast} from "react-toastify";
 
 function SuccessNotification(dispatch?: React.Dispatch<any>, message?: string, id?: string) {
     NProgress.done()

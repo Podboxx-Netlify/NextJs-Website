@@ -1,6 +1,3 @@
-import React, {useContext, useEffect, useState} from "react";
-import Link from 'next/link'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {
     faFacebookF,
     faGoogle,
@@ -21,12 +18,15 @@ import {
     faUserEdit,
     faUserPlus
 } from '@fortawesome/free-solid-svg-icons'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import clsx from "clsx";
+import Link from 'next/link'
 import {useRouter} from "next/router";
-import {Props, UserContext} from "../userContext/user-context";
+import React, {useContext, useEffect, useState} from "react";
 import {signOut} from "../userContext/sign_out";
+import {Props, UserContext} from "../userContext/user-context";
 import Socials from "./socials";
 import UserButton from './user-button'
-import clsx from "clsx";
 
 export default function Header({...props}) {
     const router = useRouter()
@@ -138,7 +138,7 @@ export default function Header({...props}) {
                                 <Socials href={props?.data?.my_podboxx?.linkedin_url} icon={faLinkedin}/>
                             </li>
                         </ul>}
-                        {props?.data?.channels?.some(subscription_required) &&
+                        {Object.keys(props?.data?.channels).length > 0 &&
                         <div className="dropdown dropdown-end">
                             <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
                                 <span><FontAwesomeIcon icon={faPodcast} className='mr-2' size='lg'/>Podcast</span>

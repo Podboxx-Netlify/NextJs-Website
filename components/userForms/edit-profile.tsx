@@ -1,12 +1,12 @@
-import React, {useContext, useEffect, useState} from "react";
-import {Props, UserContext} from "../userContext/user-context";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit, faSave, faTimes} from '@fortawesome/free-solid-svg-icons';
-import {ErrorNotification, SuccessNotification} from "../notification";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import Axios from "axios";
+import clsx from "clsx";
+import React, {useContext, useEffect, useState} from "react";
 import {mutate} from "swr";
 import validator from 'validator';
-import clsx from "clsx";
+import {ErrorNotification, SuccessNotification} from "../notification";
+import {Props, UserContext} from "../userContext/user-context";
 import EditPassword from "./edit-password";
 
 export default function EditProfile(props) {
@@ -92,10 +92,10 @@ export default function EditProfile(props) {
                     value={formData?.email || ''}/>
             </div>
             <div className="form-control justify-center mt-9 text-center lg:mr-1">
-                    <button className="btn btn-outline btn-sm lg:btn-md" onClick={() => setEditPassword(!editPassword)}>
-                        <FontAwesomeIcon icon={editPassword ? faTimes:faEdit} className='mr-2'/>
-                        {editPassword ? 'Close Password Form':'Edit Password'}
-                    </button>
+                <button className="btn btn-outline btn-sm lg:btn-md" onClick={() => setEditPassword(!editPassword)}>
+                    <FontAwesomeIcon icon={editPassword ? faTimes : faEdit} className='mr-2'/>
+                    {editPassword ? 'Close Password Form' : 'Edit Password'}
+                </button>
             </div>
             <div className="form-control justify-center mt-3 lg:mt-9 text-center lg:ml-1">
                 {editProfile ?

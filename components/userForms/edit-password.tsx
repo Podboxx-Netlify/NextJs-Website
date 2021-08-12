@@ -1,10 +1,10 @@
-import React, {useContext, useState} from "react";
-import {Props, UserContext} from "../userContext/user-context";
-import validator from 'validator';
-import JtockAuth from "j-tockauth";
-import {ErrorNotification, SuccessNotification} from "../../components/notification";
 import {faSave} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import JtockAuth from "j-tockauth";
+import React, {useContext, useState} from "react";
+import validator from 'validator';
+import {ErrorNotification, SuccessNotification} from "../../components/notification";
+import {Props, UserContext} from "../userContext/user-context";
 
 export default function EditPassword() {
     const [error, setError] = useState<string[]>([])

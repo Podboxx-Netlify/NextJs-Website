@@ -1,12 +1,12 @@
-import React, {useContext} from "react";
-import {useRouter} from "next/router";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCalendarAlt, faClock} from "@fortawesome/free-regular-svg-icons";
-import useSWR from "swr";
-import fetcher from "../../libs/fetcher"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import {useRouter} from "next/router";
+import React, {useContext} from "react";
+import useSWR from "swr";
 import {Props, UserContext} from "../../components/userContext/user-context";
+import fetcher from "../../libs/fetcher"
 
 interface Data {
     title: string
@@ -24,6 +24,7 @@ const Post: React.FC = () => {
     const {data, error} = useSWR<Data>(baseUri + 'podcast/' + router?.query?.id, fetcher)
     const {userState} = useContext<Props>(UserContext)
 
+    // If user is not logged or user is not subscribed
     if (error?.message.includes('not authorized')) return (
         <div className='ml-5'>
             <div className='text-2xl text-semibold mx-auto mt-10'>You are not authorized to view the episodes of this
@@ -34,6 +35,7 @@ const Post: React.FC = () => {
                 to {userState.isLogged ? 'subscribe' : 'sign in'}</button>
         </div>
     )
+
     if (error) return <div className='ml-5'>failed to load</div>
     if (!data) return <div className="cover-spin" id='cover-spin'/>
 
@@ -63,6 +65,7 @@ const Post: React.FC = () => {
             </article>
 
             <br/>
+
             {/* Player */}
             {data?.title && router.query.id &&
             <div className="min-h-96 h-72 my-20">

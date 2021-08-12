@@ -1,11 +1,12 @@
-import Header from './header'
-import Footer from './footer'
+import Head from 'next/head';
 import React, {useContext, useEffect} from "react";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.min.css';
-import {Props, UserContext} from "../userContext/user-context";
 import useSWR from "swr";
 import fetcher from "../../libs/fetcher";
+import {Props, UserContext} from "../userContext/user-context";
+import Footer from './footer'
+import Header from './header'
 
 interface WebsiteData {
     title: string
@@ -39,7 +40,7 @@ export default function Layout({...props}) {
 
     useEffect(() => {
         data && localStorage.getItem('channel') === null && defaultChannel()
-    },[data])
+    }, [data])
 
     const defaultChannel = () => {
         let channel_id = data?.channels.find(c => c?.subscription_required === false).id
@@ -49,8 +50,11 @@ export default function Layout({...props}) {
     if (!data) return <div className="cover-spin" id='cover-spin'/>
     return (
         <div className="flex flex-col min-h-screen min-w-screen bg-03dp">
+            <Head>
+                <title>{data?.title || 'Error'}</title>
+                <meta charSet="utf-8"/>
+            </Head>
             <ToastContainer/> {/* => Notifications */}
-            <title>{data?.title || 'Error'}</title>
             <Header data={data}/>
             <div className='container mx-auto flex-grow'>
                 {props.children}

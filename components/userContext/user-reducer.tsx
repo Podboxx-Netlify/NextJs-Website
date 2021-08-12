@@ -1,5 +1,5 @@
-import {toast} from "react-toastify";
 import NProgress from 'nprogress'
+import {toast} from "react-toastify";
 
 function userReducer(state, action) {
     switch (action.type) {

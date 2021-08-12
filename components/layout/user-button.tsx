@@ -1,6 +1,6 @@
-import React from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import clsx from "clsx";
+import React from "react";
 
 export default function UserButton(props) {
     return (
