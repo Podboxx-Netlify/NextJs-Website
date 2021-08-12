@@ -138,7 +138,7 @@ export default function Header({...props}) {
                                 <Socials href={props?.data?.my_podboxx?.linkedin_url} icon={faLinkedin}/>
                             </li>
                         </ul>}
-                        {Object.keys(props?.data?.channels).length > 0 &&
+                        {Object.keys(props?.data?.channels).length > 1 &&
                         <div className="dropdown dropdown-end">
                             <div tabIndex={0} className="btn btn-ghost rounded-btn btn-sm whitespace-nowrap">
                                 <span><FontAwesomeIcon icon={faPodcast} className='mr-2' size='lg'/>Podcast</span>
@@ -180,6 +180,7 @@ export default function Header({...props}) {
                             </ul>
                         </div>
                         }
+                        {(Object.keys(props?.data?.my_podboxx).some(e => e.includes('url')) || props?.data?.channels?.some(subscription_required)) &&
                         <div className="dropdown dropdown-end">
                             <div tabIndex={0} className="btn btn-square btn-ghost btn-sm">
                                 <FontAwesomeIcon icon={faBars} size='lg'/>
@@ -219,17 +220,22 @@ export default function Header({...props}) {
                                 <li className='text-center'>
                                     {getCurrentChannel() && <hr className='border-t-1 my-2'/>}
                                     <Socials mobile={true} href={props?.data?.my_podboxx?.fb_url} text='Facebook'/>
-                                    <Socials mobile={true} href={props?.data?.my_podboxx?.twitter_url} text='Twitter'/>
-                                    <Socials mobile={true} href={props?.data?.my_podboxx?.youtube_url} text='Youtube'/>
-                                    <Socials mobile={true} href={props?.data?.my_podboxx?.google_url} text='Google'/>
+                                    <Socials mobile={true} href={props?.data?.my_podboxx?.twitter_url}
+                                             text='Twitter'/>
+                                    <Socials mobile={true} href={props?.data?.my_podboxx?.youtube_url}
+                                             text='Youtube'/>
+                                    <Socials mobile={true} href={props?.data?.my_podboxx?.google_url}
+                                             text='Google'/>
                                     <Socials mobile={true} href={props?.data?.my_podboxx?.apple_url} text='Itunes'/>
-                                    <Socials mobile={true} href={props?.data?.my_podboxx?.spotify_url} text='Spotify'/>
+                                    <Socials mobile={true} href={props?.data?.my_podboxx?.spotify_url}
+                                             text='Spotify'/>
                                     <Socials mobile={true} href={props?.data?.my_podboxx?.linkedin_url}
                                              text='Linkedin'/>
                                 </li>
                                 }
                             </ul>
                         </div>
+                        }
                     </div>
                 </div>
             </div>
