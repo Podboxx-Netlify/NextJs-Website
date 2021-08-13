@@ -11,7 +11,11 @@ export interface Props {
 		channel: number | string
 		subscriptions: string[]
 	}
-	userDispatch?: React.Dispatch<{ type: string; user?: Record<string, unknown> }>
+	userDispatch?: React.Dispatch<{
+		type: string
+		user?: Record<string, unknown>
+		channel?: string | number
+	}>
 	isLoading: boolean
 	isLogged: boolean
 	user: Record<string, unknown>
