@@ -84,7 +84,7 @@ const Register: React.FC = () => {
 					first_name: formData.first_name,
 					last_name: formData.last_name,
 				},
-				`${window.location.host}/user/login`
+				`${window.location.origin}/user/login`
 			)
 			.then(() => {
 				userDispatch({ type: 'SIGN_UP' })
