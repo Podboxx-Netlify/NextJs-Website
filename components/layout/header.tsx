@@ -55,7 +55,7 @@ export default function Header({ ...props }) {
 	const handleChannelChange = (id: string) => {
 		localStorage.setItem('channel', id)
 		userDispatch({ type: 'FETCH_CHANNEL', channel: id.toString() })
-		localStorage.getItem('J-tockAuth-Storage') !== null && signOut(userState.channel, userDispatch)
+		localStorage.getItem('J-tockAuth-Storage') !== null && handleSignOut()
 		router
 			.replace(
 				{
@@ -80,6 +80,8 @@ export default function Header({ ...props }) {
 
 	// returns either current channel == id
 	const compareChannel = (id) => currentChannel?.toString() === id.toString()
+
+	const handleSignOut = () => signOut(userState.channel, userDispatch, router)
 
 	return (
 		<header className='sticky z-10 top-0 max-w-screen min-w-screen'>
@@ -128,7 +130,7 @@ export default function Header({ ...props }) {
 											<li>
 												<a>
 													<UserButton
-														onClick={() => signOut(userState.channel, userDispatch)}
+														onClick={() => handleSignOut()}
 														icon={faSignOutAlt}
 														content={'Sign Out'}
 														dropdown={true}
@@ -276,7 +278,7 @@ export default function Header({ ...props }) {
 													</a>
 													<a className='my-0 py-0'>
 														<UserButton
-															onClick={() => signOut(userState.channel, userDispatch)}
+															onClick={() => handleSignOut()}
 															content={'Sign Out'}
 															dropdown={true}
 														/>

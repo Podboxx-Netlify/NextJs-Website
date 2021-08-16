@@ -35,14 +35,12 @@ const initialState = {
 
 const UserProvider = ({ children }) => {
 	const [userState, userDispatch] = useReducer(UserReducer, initialState)
-
 	useEffect(() => {
 		// Wait for the client to be loaded before calling fetchChannel
 		if (typeof window !== 'undefined') {
 			fetchChannel()
 		}
 	}, [])
-
 	const isAuth = () => {
 		const auth = new JtockAuth({
 			host: process.env.NEXT_PUBLIC_API_URL,

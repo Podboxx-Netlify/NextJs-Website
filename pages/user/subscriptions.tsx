@@ -2,10 +2,11 @@ import Axios from 'axios'
 import { client, hostedFields } from 'braintree-web'
 import { useRouter } from 'next/router'
 import React, { useContext, useEffect, useState } from 'react'
-import useSWR, { mutate } from 'swr'
+import useSWR from 'swr'
 import { ErrorNotification, SuccessNotification } from '../../components/notification'
 import { Props, UserContext } from '../../components/userContext/user-context'
 import fetcher from '../../libs/fetcher'
+import usePlans from '../../libs/usePlans'
 // import useBreakpoints from '../../libs/useBreakpoints'
 import useTimeoutFn from '../../libs/useTimeoutFn'
 
@@ -14,6 +15,14 @@ interface UserProfile {
 	email: string
 	first_name: string
 	last_name: string
+	payment_method: {
+		expiration_month: string
+		expiration_year: string
+		image_url: string
+		number: string
+		payment_type: string
+		token: string
+	}
 	subscription: {
 		id: number
 		ends_at: string
@@ -43,8 +52,8 @@ const Subscriptions: React.FC = () => {
 	const [cancel] = useTimeoutFn(() => router.push('/user/login'), 5000)
 	const [formError, setFormError] = useState([])
 	const { userState, userDispatch } = useContext<Props>(UserContext)
-	const [channelPlans, setChannelPlans] = useState([])
-	const { data } = useSWR<UserProfile>(
+	const { channelPlans } = usePlans(userState.channel)
+	const { data, mutate } = useSWR<UserProfile>(
 		`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`,
 		fetcher,
 		{
@@ -56,21 +65,14 @@ const Subscriptions: React.FC = () => {
 
 	useEffect(() => {
 		if (userState?.isLogged === true) cancel()
-		if (userState?.isLogged && data)
-			listChannelPlans().then(() => getToken().then((res) => instance(res, data)))
+		if (userState?.isLogged && data) channelPlans && getToken().then((res) => instance(res, data))
 	}, [userState?.isLogged, data])
 
 	const getToken = async () => {
 		const response =
-			userState.channel !== null &&
+			!!userState.channel &&
 			(await Axios.get(`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/client_token`))
 		return response && response.data?.client_token
-	}
-
-	const listChannelPlans = async () => {
-		await Axios.get(
-			`${process.env.NEXT_PUBLIC_URL}${userState.channel}/subscription_plans/list`
-		).then((r) => setChannelPlans(r.data))
 	}
 
 	const destroyPaymentMethod = async (token: string) => {
@@ -101,20 +103,16 @@ const Subscriptions: React.FC = () => {
 			.catch(() =>
 				ErrorNotification(userDispatch, 'There was an error deleting your payment method')
 			)
-			.then(() =>
-				mutate(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`)
-			)
+			.then(() => mutate())
 	}
 
-	// console.log(data?.subscription?.payment_method)
 	const handleSubmit = async (nonce: string, data: UserProfile) => {
 		const headers = JSON.parse(localStorage.getItem('J-tockAuth-Storage'))
 		userDispatch({ type: 'LOADING' })
-		console.log(data)
 		if (userState.user['id'] !== null) {
-			if (data?.subscription?.payment_method) {
+			if (!!data?.payment_method) {
 				await Axios.put(
-					`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/${data?.subscription?.payment_method.token}`,
+					`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods/${data?.payment_method.token}`,
 					{
 						nonce_from_the_client: nonce,
 						uid: headers['uid'],
@@ -126,9 +124,7 @@ const Subscriptions: React.FC = () => {
 					.catch(() =>
 						ErrorNotification(userDispatch, 'There was an error updating your payment method')
 					)
-					.then(() =>
-						mutate(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`)
-					)
+					.then(() => mutate())
 			} else {
 				await Axios.post(
 					`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/${userState.user['id']}/payment_methods`,
@@ -143,9 +139,7 @@ const Subscriptions: React.FC = () => {
 					.catch(() =>
 						ErrorNotification(userDispatch, 'There was an error creating your payment method')
 					)
-					.then(() =>
-						mutate(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`)
-					)
+					.then(() => mutate())
 			}
 		}
 	}
@@ -158,7 +152,7 @@ const Subscriptions: React.FC = () => {
 			`${process.env.NEXT_PUBLIC_URL}${userState.channel}/payment/create_subscription`,
 			{
 				subscriber_id: userState.user['id'],
-				payment_token: data?.subscription?.payment_method.token,
+				payment_token: data?.payment_method?.token,
 				selected_plan: selected_plan,
 				uid: headers['uid'],
 				client: headers['client'],
@@ -167,9 +161,7 @@ const Subscriptions: React.FC = () => {
 		)
 			.then(() => SuccessNotification(userDispatch, 'Successfully subscribed!', 'createPlan'))
 			.catch(() => ErrorNotification(userDispatch, 'There was an error subscribing', 'createPlan'))
-			.then(() =>
-				mutate(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`)
-			)
+			.then(() => mutate())
 	}
 
 	const handleCancelPlan = async () => {
@@ -189,9 +181,7 @@ const Subscriptions: React.FC = () => {
 			.catch(() =>
 				ErrorNotification(userDispatch, 'There was an error unsubscribing', 'cancelPlan')
 			)
-			.then(() =>
-				mutate(`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/profile`)
-			)
+			.then(() => mutate())
 	}
 
 	const instance = (token: string, data: UserProfile) => {
@@ -256,7 +246,7 @@ const Subscriptions: React.FC = () => {
 							setFormError(err.details?.invalidFieldKeys)
 							return
 						}
-						handleSubmit(payload.nonce, data).then((r) => console.log(r))
+						handleSubmit(payload.nonce, data).then()
 						hostedFieldsInstance.clear('number')
 						hostedFieldsInstance.clear('cvv')
 						hostedFieldsInstance.clear('expirationDate')
@@ -268,7 +258,6 @@ const Subscriptions: React.FC = () => {
 	}
 
 	if (!userState?.isLogged || !data) return <div className='cover-spin' id='cover-spin' />
-
 	return (
 		<div className='w-full grid place-items-center mt-10'>
 			<div className='p-2 card bg-08dp shadow-md'>
@@ -278,25 +267,23 @@ const Subscriptions: React.FC = () => {
 						<div className='card shadow-md lg:card-side bg-12dp text-primary-content'>
 							<div className='card-body'>
 								<p className='text-xl'>Payment Method</p>
-								{data?.subscription?.payment_method && (
+								{data?.payment_method && (
 									<div className='rounded-box border border-primary p-2 lg:p-4 whitespace-nowrap lg:mr-5 my-2'>
 										<div className='whitespace-nowrap text-lg'>
-											{data?.subscription?.payment_method.expiration_month +
+											{data?.payment_method.expiration_month +
 												'/' +
-												data?.subscription?.payment_method.expiration_year +
+												data?.payment_method.expiration_year +
 												' '}
-											{data?.subscription?.payment_method.number}
+											{data?.payment_method.number}
 											{/* eslint-disable-next-line @next/next/no-img-element */}
 											<img
 												className='float-left mr-2'
-												src={data?.subscription?.payment_method['image_url']}
-												alt={data?.subscription?.payment_method['payment_type']}
+												src={data?.payment_method['image_url']}
+												alt={data?.payment_method['payment_type']}
 											/>
 											<button
 												className='btn btn-outline btn-primary rounded-btn btn-sm whitespace-nowrap float-right mt-1 lg:mt-0'
-												onClick={() =>
-													destroyPaymentMethod(data?.subscription?.payment_method.token)
-												}>
+												onClick={() => destroyPaymentMethod(data?.payment_method.token)}>
 												Delete
 											</button>
 										</div>
@@ -305,9 +292,7 @@ const Subscriptions: React.FC = () => {
 								<div className='collapse lg:w-96 rounded-box border border-base-300 collapse-arrow'>
 									<input type='checkbox' />
 									<div className='collapse-title text-xl font-medium'>
-										{data?.subscription?.payment_method
-											? 'Edit Payment Method'
-											: 'Add a Payment Method'}
+										{data?.payment_method ? 'Edit Payment Method' : 'Add a Payment Method'}
 									</div>
 									<div className='collapse-content p-0'>
 										<form id='cardForm' className='p-0'>
@@ -335,7 +320,7 @@ const Subscriptions: React.FC = () => {
 														userState.isLoading ? 'btn btn-primary loading' : 'btn btn-primary'
 													}
 													type='submit'>
-													{data?.subscription?.payment_method ? 'Update' : 'Create'}
+													{!!data?.payment_method ? 'Update' : 'Create'}
 												</button>
 											</div>
 										</form>
@@ -346,7 +331,7 @@ const Subscriptions: React.FC = () => {
 						<div className='card shadow-md lg:card-side bg-12dp text-primary-content lg:ml-5 mt-4 w-full lg:mt-0'>
 							<div className='card-body'>
 								<p className='text-2xl'>Plans</p>
-								{Object.keys(channelPlans).length > 0 && (
+								{!!channelPlans && Object.keys(channelPlans).length > 0 && (
 									<>
 										{Object.keys(channelPlans).map((value, index) => (
 											<div
@@ -388,12 +373,14 @@ const Subscriptions: React.FC = () => {
 														data?.subscription?.subscription_plan?.name?.indexOf(value) !== -1 &&
 														data?.subscription?.status?.includes('Active') ? (
 															<button
+																disabled={!data?.payment_method}
 																className='btn btn-primary btn-outline rounded-btn btn-sm mb-2 text-xs lg:text-md btn-block lg:whitespace-nowrap'
 																onClick={handleCancelPlan}>
 																Cancel subscription
 															</button>
 														) : (
 															<button
+																disabled={!data?.payment_method}
 																className='btn btn-outline border-success text-success rounded-btn btn-sm mb-2 whitespace-nowrap justify-center hover:bg-success hover:border-success hover:text-white'
 																onClick={() => handleCreatePlan(channelPlans[value]['_id'])}>
 																{data?.subscription?.status?.includes('Active')
