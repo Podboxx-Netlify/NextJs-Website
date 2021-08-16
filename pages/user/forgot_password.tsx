@@ -36,10 +36,7 @@ const ForgotPassword: React.FC = () => {
 		})
 		userDispatch({ type: 'LOADING' })
 		auth
-			.resetPassword(
-				formData.email,
-				'http://localhost:5000/user/reset_password?channel=' + userState.channel
-			)
+			.resetPassword(formData.email, `${window.location.host}/user/reset_password`)
 			.then(() => {
 				SuccessNotification(
 					userDispatch,

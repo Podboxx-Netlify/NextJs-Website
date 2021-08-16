@@ -1,35 +1,10 @@
 import Axios from 'axios'
-import {useRouter} from 'next/router'
-import React, {useContext, useState} from 'react'
+import { useRouter } from 'next/router'
+import React, { useContext, useState } from 'react'
 import validator from 'validator'
+import { ErrorNotification, SuccessNotification } from '../../components/notification'
+import { Props, UserContext } from '../../components/userContext/user-context'
 
-import {ErrorNotification, SuccessNotification} from '../../components/notification'
-import {Props, UserContext} from '../../components/userContext/user-context'
-
-// // export default function Edit() {
-// const router = useRouter()
-// console.log(router.query)
-// // if (router.query.channel_id === undefined || router.query.token === undefined)
-// // return router.push('/user/login').then()
-// const auth = new JtockAuth({
-// 	host: process.env.NEXT_PUBLIC_API_URL,
-// 	prefixUrl: `${router.query.channel_id}/subscribers`,
-// 	debug: true,
-// })
-// auth
-// 	.updatePasswordByToken(
-// 		router.query.token as string,
-// 		'http://localhost:5000/user/password/reset_password'
-// 	)
-// 	.then((r) => console.log(r))
-// 	.catch(() => {
-// 		ErrorNotification(null, 'There was an error while signing in.', 'edit')
-// 		router.push('/user/login').then()
-// 		// 	setLoginError('Please verify your credentials and try again.')
-// 	})
-// return <></>
-// }
-//?channel_id=7&token=uNieZt-N7XUaUpvC6pcg
 const ResetPassword: React.FC = () => {
 	const router = useRouter()
 	const [error, setError] = useState<string[]>([])
@@ -40,32 +15,8 @@ const ResetPassword: React.FC = () => {
 		password: '',
 		password_confirmation: '',
 	})
-	console.log(router.query['uid'])
-	// function validateToken() {
-	// 	const auth = new JtockAuth({
-	// 		host: process.env.NEXT_PUBLIC_API_URL,
-	// 		prefixUrl: `7/subscribers`,
-	// 		debug: true,
-	// 	})
-	// 	auth
-	// 		.updatePasswordByToken(
-	// 			'uNieZt-N7XUaUpvC6pcg',
-	// 			'http://localhost:5000/user/password/reset_password'
-	// 		)
-	// 		.then((r) => console.log(r))
-	// 		.catch(() => {
-	// 			// ErrorNotification(null, 'There was an error while signing in.', 'edit')
-	// 			router.push('/user/login').then()
-	// 		})
-	// }
-	//
-	// useEffect(() => {
-	// 	validateToken()
-	// }, [])
 
-	//http://localhost:5000/user/reset_password?channel=31&access-token=Ob2YVI6I2xyirrfI3Tb3NA&client=zREVqo90BzC2X5GMlkHKOA&client_id=zREVqo90BzC2X5GMlkHKOA&config=&expiry=1630336430&reset_password=true&token=Ob2YVI6I2xyirrfI3Tb3NA&uid=tommy.cote%2B3%40podboxx.com
 	const handleChange = (e) => {
-		console.log(e.target.value)
 		setFormData((data) => ({ ...data, [e.target.id]: e.target.value }))
 	}
 
@@ -107,10 +58,12 @@ const ResetPassword: React.FC = () => {
 	}
 
 	const handleSubmit = async (e) => {
-		console.log('handleSubmit')
 		e.preventDefault()
+		// Validates the password before submitting
 		if (verifyPassword()) return
+
 		userDispatch({ type: 'LOADING' })
+
 		await Axios.put(
 			`${process.env.NEXT_PUBLIC_API_URL}${userState.channel}/subscribers/auth/password`,
 			{
