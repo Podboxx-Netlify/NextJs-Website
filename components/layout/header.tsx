@@ -94,7 +94,7 @@ export default function Header({ ...props }) {
 				<div className='navbar-center px-2 mx-2 lg:flex invisible lg:visible hidden'>
 					<div className='flex items-stretch invisible lg:visible'>
 						<UserButton onClick={() => router.replace('/')} icon={faHome} content={'Home'} />
-						{props.data.channels.some(subscription_required) && getCurrentChannel() && (
+						{props?.data?.channels?.some(subscription_required) && getCurrentChannel() && (
 							<>
 								{isLogged ? (
 									<div className='dropdown dropdown-end'>

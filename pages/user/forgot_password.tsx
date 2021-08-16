@@ -1,16 +1,16 @@
 import JtockAuth from 'j-tockauth'
 import { useRouter } from 'next/router'
 import React, { useContext, useState } from 'react'
+import validator from 'validator'
 import { ErrorNotification, SuccessNotification } from '../../components/notification'
 import { Props, UserContext } from '../../components/userContext/user-context'
 
-const Login: React.FC = () => {
+const ForgotPassword: React.FC = () => {
 	const router = useRouter()
-	const [loginError, setLoginError] = useState<string>('')
 	const { userState, userDispatch } = useContext<Props>(UserContext)
+	const [emailError, setEmailError] = useState<string>('')
 	const [formData, setFormData] = useState({
 		email: '',
-		password: '',
 	})
 
 	const handleChange = (e) => {
@@ -18,9 +18,17 @@ const Login: React.FC = () => {
 		setFormData((data) => ({ ...data, [e.target.id]: e.target.value }))
 	}
 
+	const verifyEmail = () => {
+		let error = ''
+		if (!validator.isEmail(formData.email)) error = 'Email is invalid.'
+		setEmailError(error)
+		return error === ''
+	}
+
 	const handleSubmit = (e) => {
 		console.log('handleSubmit')
 		e.preventDefault()
+		if (!verifyEmail()) return
 		const auth = new JtockAuth({
 			host: process.env.NEXT_PUBLIC_API_URL,
 			prefixUrl: `${userState.channel}/subscribers`,
@@ -28,15 +36,24 @@ const Login: React.FC = () => {
 		})
 		userDispatch({ type: 'LOADING' })
 		auth
-			.signIn(formData.email, formData.password)
-			.then((userData) => {
-				userDispatch({ type: 'SIGN_IN', user: userData.data })
-				SuccessNotification(userDispatch, 'Signed in successfully', 'sign_up')
+			.resetPassword(
+				formData.email,
+				'http://localhost:5000/user/reset_password?channel=' + userState.channel
+			)
+			.then(() => {
+				SuccessNotification(
+					userDispatch,
+					'You should receive an email with the instructions to reset your password.',
+					'forgot-password'
+				)
 				router.push('/').then()
 			})
 			.catch(() => {
-				ErrorNotification(userDispatch, 'There was an error while signing in.', 'sign_up')
-				setLoginError('Please verify your credentials and try again.')
+				ErrorNotification(
+					userDispatch,
+					'There was an error while trying to reset your password.',
+					'forgot-password'
+				)
 			})
 	}
 
@@ -44,8 +61,12 @@ const Login: React.FC = () => {
 		<div className='w-full grid place-items-center mt-10'>
 			<div className='p-2 card bg-12dp shadow-md'>
 				<div className='form-control card-body'>
-					<div className='text-center text-3xl font-bold card-title'>Sign In</div>
-					<form name='login_form' id='login_form' onSubmit={handleSubmit} action=''>
+					<div className='text-center text-3xl font-bold card-title mb-5'>Forgot Password</div>
+					<form
+						name='forgot_password_form'
+						id='forgot_password_form'
+						onSubmit={handleSubmit}
+						action=''>
 						<label className='label'>
 							<span className='label-text'>Email</span>
 						</label>
@@ -58,26 +79,11 @@ const Login: React.FC = () => {
 							onChange={handleChange}
 							placeholder='Enter Your Email'
 						/>
-						<label className='label'>
-							<span className='label-text'>Password</span>
-						</label>
-						<input
-							className='input input-bordered w-full'
-							type='password'
-							name='password'
-							id='password'
-							value={formData.password}
-							onChange={handleChange}
-							placeholder='Enter A Password'
-						/>
-						<a href='/user/forgot_password' className='label-text-alt'>
-							Forgot password?
-						</a>
 						<div className='form-control justify-center mt-5'>
-							<div className='text-error'>{loginError !== '' && loginError}</div>
+							<div className='text-error'>{emailError !== '' && emailError}</div>
 							<button
 								className={userState?.isLoading ? 'btn btn-outline loading' : 'btn btn-outline'}>
-								Sign In
+								Reset Password
 							</button>
 						</div>
 					</form>
@@ -86,4 +92,4 @@ const Login: React.FC = () => {
 		</div>
 	)
 }
-export default Login
+export default ForgotPassword
