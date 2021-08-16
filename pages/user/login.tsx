@@ -1,4 +1,5 @@
 import JtockAuth from 'j-tockauth'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useContext, useState } from 'react'
 import { ErrorNotification, SuccessNotification } from '../../components/notification'
@@ -70,9 +71,9 @@ const Login: React.FC = () => {
 							onChange={handleChange}
 							placeholder='Enter A Password'
 						/>
-						<a href='/user/forgot_password' className='label-text-alt'>
-							Forgot password?
-						</a>
+						<span className='label-text-alt'>
+							<Link href='/user/forgot_password'>Forgot password?</Link>
+						</span>
 						<div className='form-control justify-center mt-5'>
 							<div className='text-error'>{loginError !== '' && loginError}</div>
 							<button
